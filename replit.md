@@ -8,6 +8,17 @@ LogiFlow is a comprehensive logistics management platform that connects clients,
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+**Authentication System Overhaul (July 16, 2025)**
+- Replaced Replit Auth with email/password authentication
+- Implemented SHA-256 password hashing for security
+- Updated user schema to use integer IDs instead of string IDs
+- Created login and registration pages with form validation
+- Added session management with PostgreSQL session store
+- Updated all database references to use integer user IDs
+- Created test users for development: admin@test.com, client@test.com, driver@test.com (password: empty string, hashed)
+
 ## System Architecture
 
 ### Full-Stack Architecture
@@ -41,7 +52,7 @@ The project follows a monorepo pattern with three main directories:
 - **Middleware**: Custom logging and error handling middleware
 
 ### Database Schema
-- **Users**: Store user profiles with role-based access (client, driver, admin)
+- **Users**: Store user profiles with role-based access (client, driver, admin) and hashed passwords
 - **Transport Requests**: Client-created shipment requests with pickup/delivery details
 - **Bids**: Driver proposals for transport requests with pricing
 - **Sessions**: Secure session storage for authentication
@@ -50,9 +61,9 @@ The project follows a monorepo pattern with three main directories:
 
 ### Authentication Flow
 1. User accesses the landing page
-2. Clicks "Sign In" which redirects to `/api/login`
-3. Replit Auth handles OAuth flow
-4. User profile is created/updated in the database
+2. Clicks "Sign In" to go to login page or "Get Started" to register
+3. User enters email and password credentials
+4. Password is hashed using SHA-256 and validated against database
 5. Session is established and user is redirected to role-appropriate dashboard
 
 ### Transport Request Flow

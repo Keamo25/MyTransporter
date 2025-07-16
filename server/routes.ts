@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, isAuthenticated } from "./auth";
 import { insertTransportRequestSchema, insertBidSchema } from "@shared/schema";
 import { z } from "zod";
 
@@ -9,23 +9,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
 
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
-
   // Transport request routes
   app.post('/api/transport-requests', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = req.user;
       
       if (!user || user.role !== 'client') {
         return res.status(403).json({ message: "Only clients can create transport requests" });
@@ -34,7 +21,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = insertTransportRequestSchema.parse(req.body);
       const request = await storage.createTransportRequest({
         ...validatedData,
-        clientId: userId,
+        clientId: user.id,
       });
       
       res.json(request);
@@ -46,8 +33,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/transport-requests', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = req.user;
       
       if (!user) {
         return res.status(401).json({ message: "User not found" });
@@ -55,7 +41,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       let requests;
       if (user.role === 'client') {
-        requests = await storage.getTransportRequestsForClient(userId);
+        requests = await storage.getTransportRequestsForClient(user.id);
       } else if (user.role === 'driver') {
         // Drivers see all pending requests but without budget info
         requests = await storage.getTransportRequests();
@@ -77,8 +63,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/transport-requests/:id', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = req.user;
       const requestId = parseInt(req.params.id);
       
       if (!user) {
@@ -92,7 +77,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Check permissions
-      if (user.role === 'client' && request.clientId !== userId) {
+      if (user.role === 'client' && request.clientId !== user.id) {
         return res.status(403).json({ message: "Unauthorized" });
       }
       
@@ -110,8 +95,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch('/api/transport-requests/:id/assign', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = req.user;
       const requestId = parseInt(req.params.id);
       const { driverId } = req.body;
       
@@ -119,12 +103,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Only admins can assign drivers" });
       }
 
-      const request = await storage.updateTransportRequestStatus(requestId, 'assigned', driverId);
+      const request = await storage.updateTransportRequestStatus(requestId, 'assigned', parseInt(driverId));
       
       // Update bid status
       const bids = await storage.getBidsForRequest(requestId);
       for (const bid of bids) {
-        if (bid.driverId === driverId) {
+        if (bid.driverId === parseInt(driverId)) {
           await storage.updateBidStatus(bid.id, 'accepted');
         } else {
           await storage.updateBidStatus(bid.id, 'rejected');
@@ -141,8 +125,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Bid routes
   app.post('/api/bids', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = req.user;
       
       if (!user || user.role !== 'driver') {
         return res.status(403).json({ message: "Only drivers can create bids" });
@@ -151,7 +134,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = insertBidSchema.parse(req.body);
       const bid = await storage.createBid({
         ...validatedData,
-        driverId: userId,
+        driverId: user.id,
       });
       
       res.json(bid);
@@ -163,8 +146,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/bids/request/:requestId', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = req.user;
       const requestId = parseInt(req.params.requestId);
       
       if (!user) {
@@ -178,7 +160,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Check permissions
-      if (user.role === 'client' && request.clientId !== userId) {
+      if (user.role === 'client' && request.clientId !== user.id) {
         return res.status(403).json({ message: "Unauthorized" });
       }
       
@@ -196,14 +178,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/bids/driver', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = req.user;
       
       if (!user || user.role !== 'driver') {
         return res.status(403).json({ message: "Only drivers can view their bids" });
       }
 
-      const bids = await storage.getBidsForDriver(userId);
+      const bids = await storage.getBidsForDriver(user.id);
       res.json(bids);
     } catch (error) {
       console.error("Error fetching driver bids:", error);
@@ -214,8 +195,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin routes
   app.get('/api/admin/stats', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = req.user;
       
       if (!user || user.role !== 'admin') {
         return res.status(403).json({ message: "Only admins can view stats" });

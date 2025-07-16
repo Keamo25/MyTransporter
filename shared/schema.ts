@@ -25,13 +25,13 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// User storage table (mandatory for Replit Auth)
+// User storage table
 export const users = pgTable("users", {
-  id: varchar("id").primaryKey().notNull(),
-  email: varchar("email").unique(),
+  id: serial("id").primaryKey(),
+  email: varchar("email").unique().notNull(),
+  password: varchar("password").notNull(),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
-  profileImageUrl: varchar("profile_image_url"),
   role: varchar("role").notNull().default("client"), // client, driver, admin
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -40,7 +40,7 @@ export const users = pgTable("users", {
 // Transport requests table
 export const transportRequests = pgTable("transport_requests", {
   id: serial("id").primaryKey(),
-  clientId: varchar("client_id").notNull(),
+  clientId: integer("client_id").notNull(),
   pickupLocation: text("pickup_location").notNull(),
   deliveryLocation: text("delivery_location").notNull(),
   pickupDate: timestamp("pickup_date").notNull(),
@@ -50,7 +50,7 @@ export const transportRequests = pgTable("transport_requests", {
   dimensions: text("dimensions").notNull(),
   budget: decimal("budget", { precision: 10, scale: 2 }).notNull(),
   status: varchar("status").notNull().default("pending"), // pending, assigned, in_progress, completed, cancelled
-  assignedDriverId: varchar("assigned_driver_id"),
+  assignedDriverId: integer("assigned_driver_id"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -59,7 +59,7 @@ export const transportRequests = pgTable("transport_requests", {
 export const bids = pgTable("bids", {
   id: serial("id").primaryKey(),
   requestId: integer("request_id").notNull(),
-  driverId: varchar("driver_id").notNull(),
+  driverId: integer("driver_id").notNull(),
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   message: text("message"),
   estimatedDelivery: timestamp("estimated_delivery").notNull(),
@@ -100,10 +100,19 @@ export const bidsRelations = relations(bids, ({ one }) => ({
 // Zod schemas
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
+  password: true,
   firstName: true,
   lastName: true,
-  profileImageUrl: true,
   role: true,
+});
+
+export const loginUserSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
+export const registerUserSchema = insertUserSchema.extend({
+  password: z.string().min(6),
 });
 
 export const insertTransportRequestSchema = createInsertSchema(transportRequests).pick({
@@ -125,8 +134,10 @@ export const insertBidSchema = createInsertSchema(bids).pick({
 });
 
 // Types
-export type UpsertUser = typeof users.$inferInsert;
+export type InsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
+export type LoginUser = z.infer<typeof loginUserSchema>;
+export type RegisterUser = z.infer<typeof registerUserSchema>;
 export type InsertTransportRequest = z.infer<typeof insertTransportRequestSchema>;
 export type TransportRequest = typeof transportRequests.$inferSelect;
 export type InsertBid = z.infer<typeof insertBidSchema>;

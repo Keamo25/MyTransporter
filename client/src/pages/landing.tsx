@@ -19,11 +19,20 @@ export default function Landing() {
               
               <div className="space-y-4">
                 <Button
-                  onClick={() => window.location.href = '/api/login'}
+                  onClick={() => window.location.href = '/login'}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center"
                 >
                   <Users className="mr-2 h-4 w-4" />
                   Sign In
+                </Button>
+                
+                <Button
+                  onClick={() => window.location.href = '/register'}
+                  variant="outline"
+                  className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center"
+                >
+                  <Truck className="mr-2 h-4 w-4" />
+                  Get Started
                 </Button>
               </div>
               

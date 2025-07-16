@@ -5,10 +5,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/landing";
+import Login from "@/pages/login";
+import Register from "@/pages/register";
 import ClientDashboard from "@/pages/client-dashboard";
 import DriverDashboard from "@/pages/driver-dashboard";
 import AdminDashboard from "@/pages/admin-dashboard";
 import NotFound from "@/pages/not-found";
+import type { User } from "@shared/schema";
 
 function Router() {
   const { user, isLoading } = useAuth();
@@ -27,13 +30,18 @@ function Router() {
   return (
     <Switch>
       {!user ? (
-        <Route path="/" component={Landing} />
+        <>
+          <Route path="/" component={Landing} />
+          <Route path="/login" component={Login} />
+          <Route path="/register" component={Register} />
+        </>
       ) : (
         <>
           <Route path="/" component={() => {
-            if (user.role === "client") return <ClientDashboard />;
-            if (user.role === "driver") return <DriverDashboard />;
-            if (user.role === "admin") return <AdminDashboard />;
+            const typedUser = user as User;
+            if (typedUser.role === "client") return <ClientDashboard />;
+            if (typedUser.role === "driver") return <DriverDashboard />;
+            if (typedUser.role === "admin") return <AdminDashboard />;
             return <NotFound />;
           }} />
           <Route path="/client" component={ClientDashboard} />

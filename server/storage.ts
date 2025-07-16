@@ -3,31 +3,32 @@ import {
   transportRequests,
   bids,
   type User,
-  type UpsertUser,
+  type InsertUser,
   type InsertTransportRequest,
   type TransportRequest,
   type InsertBid,
   type Bid,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, count } from "drizzle-orm";
 
 export interface IStorage {
-  // User operations (mandatory for Replit Auth)
-  getUser(id: string): Promise<User | undefined>;
-  upsertUser(user: UpsertUser): Promise<User>;
+  // User operations
+  getUserById(id: number): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
   
   // Transport request operations
-  createTransportRequest(request: InsertTransportRequest & { clientId: string }): Promise<TransportRequest>;
+  createTransportRequest(request: InsertTransportRequest & { clientId: number }): Promise<TransportRequest>;
   getTransportRequests(): Promise<TransportRequest[]>;
-  getTransportRequestsForClient(clientId: string): Promise<TransportRequest[]>;
+  getTransportRequestsForClient(clientId: number): Promise<TransportRequest[]>;
   getTransportRequestById(id: number): Promise<TransportRequest | undefined>;
-  updateTransportRequestStatus(id: number, status: string, assignedDriverId?: string): Promise<TransportRequest>;
+  updateTransportRequestStatus(id: number, status: string, assignedDriverId?: number): Promise<TransportRequest>;
   
   // Bid operations
-  createBid(bid: InsertBid & { driverId: string }): Promise<Bid>;
+  createBid(bid: InsertBid & { driverId: number }): Promise<Bid>;
   getBidsForRequest(requestId: number): Promise<Bid[]>;
-  getBidsForDriver(driverId: string): Promise<Bid[]>;
+  getBidsForDriver(driverId: number): Promise<Bid[]>;
   updateBidStatus(id: number, status: string): Promise<Bid>;
   
   // Dashboard stats
@@ -41,28 +42,26 @@ export interface IStorage {
 
 export class DatabaseStorage implements IStorage {
   // User operations
-  async getUser(id: string): Promise<User | undefined> {
+  async getUserById(id: number): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user;
   }
 
-  async upsertUser(userData: UpsertUser): Promise<User> {
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async createUser(userData: InsertUser): Promise<User> {
     const [user] = await db
       .insert(users)
       .values(userData)
-      .onConflictDoUpdate({
-        target: users.id,
-        set: {
-          ...userData,
-          updatedAt: new Date(),
-        },
-      })
       .returning();
     return user;
   }
 
   // Transport request operations
-  async createTransportRequest(request: InsertTransportRequest & { clientId: string }): Promise<TransportRequest> {
+  async createTransportRequest(request: InsertTransportRequest & { clientId: number }): Promise<TransportRequest> {
     const [transportRequest] = await db
       .insert(transportRequests)
       .values(request)
@@ -77,7 +76,7 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(transportRequests.createdAt));
   }
 
-  async getTransportRequestsForClient(clientId: string): Promise<TransportRequest[]> {
+  async getTransportRequestsForClient(clientId: number): Promise<TransportRequest[]> {
     return await db
       .select()
       .from(transportRequests)
@@ -93,7 +92,7 @@ export class DatabaseStorage implements IStorage {
     return request;
   }
 
-  async updateTransportRequestStatus(id: number, status: string, assignedDriverId?: string): Promise<TransportRequest> {
+  async updateTransportRequestStatus(id: number, status: string, assignedDriverId?: number): Promise<TransportRequest> {
     const updateData: any = { status, updatedAt: new Date() };
     if (assignedDriverId) {
       updateData.assignedDriverId = assignedDriverId;
@@ -108,7 +107,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Bid operations
-  async createBid(bid: InsertBid & { driverId: string }): Promise<Bid> {
+  async createBid(bid: InsertBid & { driverId: number }): Promise<Bid> {
     const [newBid] = await db
       .insert(bids)
       .values(bid)
@@ -124,7 +123,7 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(bids.createdAt));
   }
 
-  async getBidsForDriver(driverId: string): Promise<Bid[]> {
+  async getBidsForDriver(driverId: number): Promise<Bid[]> {
     return await db
       .select()
       .from(bids)
@@ -148,24 +147,24 @@ export class DatabaseStorage implements IStorage {
     pendingApproval: number;
     completedToday: number;
   }> {
-    const totalRequests = await db
-      .select({ count: transportRequests.id })
+    const [totalRequests] = await db
+      .select({ count: count() })
       .from(transportRequests);
 
-    const activeDrivers = await db
-      .select({ count: users.id })
+    const [activeDrivers] = await db
+      .select({ count: count() })
       .from(users)
       .where(eq(users.role, "driver"));
 
-    const pendingApproval = await db
-      .select({ count: transportRequests.id })
+    const [pendingApproval] = await db
+      .select({ count: count() })
       .from(transportRequests)
       .where(eq(transportRequests.status, "pending"));
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const completedToday = await db
-      .select({ count: transportRequests.id })
+    const [completedToday] = await db
+      .select({ count: count() })
       .from(transportRequests)
       .where(and(
         eq(transportRequests.status, "completed"),
@@ -173,10 +172,10 @@ export class DatabaseStorage implements IStorage {
       ));
 
     return {
-      totalRequests: totalRequests.length,
-      activeDrivers: activeDrivers.length,
-      pendingApproval: pendingApproval.length,
-      completedToday: completedToday.length,
+      totalRequests: totalRequests.count,
+      activeDrivers: activeDrivers.count,
+      pendingApproval: pendingApproval.count,
+      completedToday: completedToday.count,
     };
   }
 }

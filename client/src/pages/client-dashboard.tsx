@@ -39,7 +39,7 @@ export default function ClientDashboard() {
         variant: "destructive",
       });
       setTimeout(() => {
-        window.location.href = "/api/login";
+        window.location.href = "/login";
       }, 500);
       return;
     }
@@ -95,7 +95,7 @@ export default function ClientDashboard() {
           variant: "destructive",
         });
         setTimeout(() => {
-          window.location.href = "/api/login";
+          window.location.href = "/login";
         }, 500);
         return;
       }
@@ -155,7 +155,11 @@ export default function ClientDashboard() {
                 </div>
                 <span className="text-sm font-medium">{user?.firstName} {user?.lastName}</span>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => window.location.href = '/api/logout'}>
+              <Button variant="ghost" size="icon" onClick={() => {
+                fetch('/api/auth/logout', { method: 'POST' }).then(() => {
+                  window.location.href = '/';
+                });
+              }}>
                 <LogOut className="h-4 w-4" />
               </Button>
             </div>
