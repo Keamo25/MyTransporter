@@ -1,0 +1,133 @@
+import {
+  pgTable,
+  text,
+  varchar,
+  timestamp,
+  jsonb,
+  index,
+  serial,
+  decimal,
+  integer,
+  boolean,
+} from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
+
+// Session storage table (mandatory for Replit Auth)
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  },
+  (table) => [index("IDX_session_expire").on(table.expire)],
+);
+
+// User storage table (mandatory for Replit Auth)
+export const users = pgTable("users", {
+  id: varchar("id").primaryKey().notNull(),
+  email: varchar("email").unique(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  profileImageUrl: varchar("profile_image_url"),
+  role: varchar("role").notNull().default("client"), // client, driver, admin
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Transport requests table
+export const transportRequests = pgTable("transport_requests", {
+  id: serial("id").primaryKey(),
+  clientId: varchar("client_id").notNull(),
+  pickupLocation: text("pickup_location").notNull(),
+  deliveryLocation: text("delivery_location").notNull(),
+  pickupDate: timestamp("pickup_date").notNull(),
+  deliveryDate: timestamp("delivery_date").notNull(),
+  itemDescription: text("item_description").notNull(),
+  weight: decimal("weight", { precision: 10, scale: 2 }).notNull(),
+  dimensions: text("dimensions").notNull(),
+  budget: decimal("budget", { precision: 10, scale: 2 }).notNull(),
+  status: varchar("status").notNull().default("pending"), // pending, assigned, in_progress, completed, cancelled
+  assignedDriverId: varchar("assigned_driver_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Bids table
+export const bids = pgTable("bids", {
+  id: serial("id").primaryKey(),
+  requestId: integer("request_id").notNull(),
+  driverId: varchar("driver_id").notNull(),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  message: text("message"),
+  estimatedDelivery: timestamp("estimated_delivery").notNull(),
+  status: varchar("status").notNull().default("pending"), // pending, accepted, rejected
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Relations
+export const usersRelations = relations(users, ({ many }) => ({
+  transportRequests: many(transportRequests),
+  bids: many(bids),
+}));
+
+export const transportRequestsRelations = relations(transportRequests, ({ one, many }) => ({
+  client: one(users, {
+    fields: [transportRequests.clientId],
+    references: [users.id],
+  }),
+  assignedDriver: one(users, {
+    fields: [transportRequests.assignedDriverId],
+    references: [users.id],
+  }),
+  bids: many(bids),
+}));
+
+export const bidsRelations = relations(bids, ({ one }) => ({
+  request: one(transportRequests, {
+    fields: [bids.requestId],
+    references: [transportRequests.id],
+  }),
+  driver: one(users, {
+    fields: [bids.driverId],
+    references: [users.id],
+  }),
+}));
+
+// Zod schemas
+export const insertUserSchema = createInsertSchema(users).pick({
+  email: true,
+  firstName: true,
+  lastName: true,
+  profileImageUrl: true,
+  role: true,
+});
+
+export const insertTransportRequestSchema = createInsertSchema(transportRequests).pick({
+  pickupLocation: true,
+  deliveryLocation: true,
+  pickupDate: true,
+  deliveryDate: true,
+  itemDescription: true,
+  weight: true,
+  dimensions: true,
+  budget: true,
+});
+
+export const insertBidSchema = createInsertSchema(bids).pick({
+  requestId: true,
+  amount: true,
+  message: true,
+  estimatedDelivery: true,
+});
+
+// Types
+export type UpsertUser = typeof users.$inferInsert;
+export type User = typeof users.$inferSelect;
+export type InsertTransportRequest = z.infer<typeof insertTransportRequestSchema>;
+export type TransportRequest = typeof transportRequests.$inferSelect;
+export type InsertBid = z.infer<typeof insertBidSchema>;
+export type Bid = typeof bids.$inferSelect;
