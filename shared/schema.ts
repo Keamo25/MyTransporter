@@ -148,6 +148,14 @@ export const insertBidSchema = createInsertSchema(bids).pick({
   estimatedDelivery: true,
 });
 
+// Schema for frontend bid form validation (expects strings from form inputs)
+export const clientBidSchema = z.object({
+  requestId: z.number(),
+  amount: z.string().min(1, "Amount is required"),
+  message: z.string().optional(),
+  estimatedDelivery: z.string().min(1, "Estimated delivery is required"),
+});
+
 // Types
 export type InsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;

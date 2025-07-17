@@ -106,7 +106,7 @@ export default function DriverDashboard() {
 
     createBidMutation.mutate({
       requestId,
-      amount: parseFloat(amount),
+      amount: parseFloat(amount), // Send as number, server will convert to string
       message: message || "",
       estimatedDelivery: estimatedDelivery.toISOString(),
     });

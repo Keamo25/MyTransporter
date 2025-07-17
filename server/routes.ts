@@ -157,11 +157,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Only drivers can create bids" });
       }
 
-      const validatedData = insertBidSchema.parse(req.body);
-      const bid = await storage.createBid({
-        ...validatedData,
+      // Convert client data to database format
+      const { requestId, amount, message, estimatedDelivery } = req.body;
+      
+      const bidToCreate = {
+        requestId,
+        amount: amount.toString(), // Convert number to string for decimal
+        message,
+        estimatedDelivery: new Date(estimatedDelivery), // Convert string to Date
         driverId: user.id,
-      });
+      };
+      
+      const bid = await storage.createBid(bidToCreate);
       
       res.json(bid);
     } catch (error) {
