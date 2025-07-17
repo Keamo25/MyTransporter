@@ -52,16 +52,7 @@ export default function ClientDashboard() {
   });
 
   const form = useForm({
-    resolver: zodResolver(insertTransportRequestSchema.extend({
-      pickupDate: insertTransportRequestSchema.shape.pickupDate.refine(
-        (date) => new Date(date) > new Date(),
-        "Pickup date must be in the future"
-      ),
-      deliveryDate: insertTransportRequestSchema.shape.deliveryDate.refine(
-        (date) => new Date(date) > new Date(),
-        "Delivery date must be in the future"
-      ),
-    })),
+    resolver: zodResolver(insertTransportRequestSchema),
     defaultValues: {
       pickupLocation: "",
       deliveryLocation: "",

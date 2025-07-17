@@ -115,16 +115,21 @@ export const registerUserSchema = insertUserSchema.extend({
   password: z.string().min(6),
 });
 
-export const insertTransportRequestSchema = createInsertSchema(transportRequests).pick({
-  pickupLocation: true,
-  deliveryLocation: true,
-  pickupDate: true,
-  deliveryDate: true,
-  itemDescription: true,
-  weight: true,
-  dimensions: true,
-  budget: true,
-});
+export const insertTransportRequestSchema = createInsertSchema(transportRequests)
+  .pick({
+    pickupLocation: true,
+    deliveryLocation: true,
+    pickupDate: true,
+    deliveryDate: true,
+    itemDescription: true,
+    weight: true,
+    dimensions: true,
+    budget: true,
+  })
+  .extend({
+    pickupDate: z.string().datetime(),
+    deliveryDate: z.string().datetime(),
+  });
 
 export const insertBidSchema = createInsertSchema(bids).pick({
   requestId: true,
