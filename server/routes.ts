@@ -18,9 +18,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Only clients can create transport requests" });
       }
 
-      const validatedData = insertTransportRequestSchema.parse(req.body);
+      // Create a schema that converts client data to proper database format
+      const serverRequestSchema = z.object({
+        pickupLocation: z.string(),
+        deliveryLocation: z.string(),
+        pickupDate: z.string(),
+        pickupTime: z.string(),
+        deliveryDate: z.string(),
+        deliveryTime: z.string(),
+        itemDescription: z.string(),
+        weight: z.number(),
+        dimensions: z.string(),
+        budget: z.number(),
+      });
+      
+      const clientData = serverRequestSchema.parse(req.body);
+      
+      // Convert separate date/time fields to Date objects
+      const pickupDateTime = new Date(`${clientData.pickupDate}T${clientData.pickupTime}`);
+      const deliveryDateTime = new Date(`${clientData.deliveryDate}T${clientData.deliveryTime}`);
+      
       const request = await storage.createTransportRequest({
-        ...validatedData,
+        pickupLocation: clientData.pickupLocation,
+        deliveryLocation: clientData.deliveryLocation,
+        pickupDate: pickupDateTime,
+        deliveryDate: deliveryDateTime,
+        itemDescription: clientData.itemDescription,
+        weight: clientData.weight,
+        dimensions: clientData.dimensions,
+        budget: clientData.budget,
         clientId: user.id,
       });
       

@@ -57,7 +57,9 @@ export default function ClientDashboard() {
       pickupLocation: "",
       deliveryLocation: "",
       pickupDate: "",
+      pickupTime: "",
       deliveryDate: "",
+      deliveryTime: "",
       itemDescription: "",
       weight: "",
       dimensions: "",
@@ -101,8 +103,6 @@ export default function ClientDashboard() {
   const onSubmit = (data: any) => {
     createRequestMutation.mutate({
       ...data,
-      pickupDate: new Date(data.pickupDate).toISOString(),
-      deliveryDate: new Date(data.deliveryDate).toISOString(),
       weight: parseFloat(data.weight),
       budget: parseFloat(data.budget),
     });
@@ -200,32 +200,62 @@ export default function ClientDashboard() {
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <FormField
-                        control={form.control}
-                        name="pickupDate"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Pickup Date</FormLabel>
-                            <FormControl>
-                              <Input type="datetime-local" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="deliveryDate"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Delivery Date</FormLabel>
-                            <FormControl>
-                              <Input type="datetime-local" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      <div className="space-y-4">
+                        <FormField
+                          control={form.control}
+                          name="pickupDate"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Pickup Date</FormLabel>
+                              <FormControl>
+                                <Input type="date" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="pickupTime"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Pickup Time</FormLabel>
+                              <FormControl>
+                                <Input type="time" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <div className="space-y-4">
+                        <FormField
+                          control={form.control}
+                          name="deliveryDate"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Delivery Date</FormLabel>
+                              <FormControl>
+                                <Input type="date" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="deliveryTime"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Delivery Time</FormLabel>
+                              <FormControl>
+                                <Input type="time" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                     </div>
                     
                     <FormField

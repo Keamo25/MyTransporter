@@ -127,12 +127,14 @@ export const insertTransportRequestSchema = createInsertSchema(transportRequests
   budget: true,
 });
 
-// Schema for frontend form validation (expects strings from datetime-local inputs)
+// Schema for frontend form validation (expects strings from form inputs)
 export const clientTransportRequestSchema = z.object({
   pickupLocation: z.string().min(1, "Pickup location is required"),
   deliveryLocation: z.string().min(1, "Delivery location is required"),
   pickupDate: z.string().min(1, "Pickup date is required"),
+  pickupTime: z.string().min(1, "Pickup time is required"),
   deliveryDate: z.string().min(1, "Delivery date is required"),
+  deliveryTime: z.string().min(1, "Delivery time is required"),
   itemDescription: z.string().min(1, "Item description is required"),
   weight: z.string().min(1, "Weight is required"),
   dimensions: z.string().min(1, "Dimensions are required"),
