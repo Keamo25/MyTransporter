@@ -69,6 +69,7 @@ export default function ClientDashboard() {
 
   const createRequestMutation = useMutation({
     mutationFn: async (data: any) => {
+      console.log("Sending data:", data);
       const response = await apiRequest("POST", "/api/transport-requests", data);
       return response.json();
     },
@@ -81,6 +82,7 @@ export default function ClientDashboard() {
       queryClient.invalidateQueries({ queryKey: ["/api/transport-requests"] });
     },
     onError: (error) => {
+      console.error("Mutation error:", error);
       if (isUnauthorizedError(error)) {
         toast({
           title: "Unauthorized",
