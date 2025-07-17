@@ -115,21 +115,29 @@ export const registerUserSchema = insertUserSchema.extend({
   password: z.string().min(6),
 });
 
-export const insertTransportRequestSchema = createInsertSchema(transportRequests)
-  .pick({
-    pickupLocation: true,
-    deliveryLocation: true,
-    pickupDate: true,
-    deliveryDate: true,
-    itemDescription: true,
-    weight: true,
-    dimensions: true,
-    budget: true,
-  })
-  .extend({
-    pickupDate: z.string().datetime(),
-    deliveryDate: z.string().datetime(),
-  });
+// Schema for backend validation (expects Date objects)
+export const insertTransportRequestSchema = createInsertSchema(transportRequests).pick({
+  pickupLocation: true,
+  deliveryLocation: true,
+  pickupDate: true,
+  deliveryDate: true,
+  itemDescription: true,
+  weight: true,
+  dimensions: true,
+  budget: true,
+});
+
+// Schema for frontend form validation (expects strings from datetime-local inputs)
+export const clientTransportRequestSchema = z.object({
+  pickupLocation: z.string().min(1, "Pickup location is required"),
+  deliveryLocation: z.string().min(1, "Delivery location is required"),
+  pickupDate: z.string().min(1, "Pickup date is required"),
+  deliveryDate: z.string().min(1, "Delivery date is required"),
+  itemDescription: z.string().min(1, "Item description is required"),
+  weight: z.string().min(1, "Weight is required"),
+  dimensions: z.string().min(1, "Dimensions are required"),
+  budget: z.string().min(1, "Budget is required"),
+});
 
 export const insertBidSchema = createInsertSchema(bids).pick({
   requestId: true,

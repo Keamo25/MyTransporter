@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Truck, Bell, User, LogOut } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { insertTransportRequestSchema, type TransportRequest } from "@shared/schema";
+import { clientTransportRequestSchema, type TransportRequest } from "@shared/schema";
 import { isUnauthorizedError } from "@/lib/authUtils";
 
 const getStatusColor = (status: string) => {
@@ -52,7 +52,7 @@ export default function ClientDashboard() {
   });
 
   const form = useForm({
-    resolver: zodResolver(insertTransportRequestSchema),
+    resolver: zodResolver(clientTransportRequestSchema),
     defaultValues: {
       pickupLocation: "",
       deliveryLocation: "",
