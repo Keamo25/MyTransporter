@@ -12,6 +12,14 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**Admin User Registration Feature (July 22, 2025)**
+- Added comprehensive user registration section to admin dashboard
+- Implemented tabbed interface for admin portal (Request Management | User Registration)
+- Added role-based registration form with proper access controls
+- Admin role option is only visible to administrators, hidden from clients and drivers
+- Form includes validation for email, password, names, and account type selection
+- Registration form integrates with existing authentication system
+
 **Application Rebranding (July 22, 2025)**
 - Changed application name from "LogiFlow" to "MyTransporter"
 - Added application slogan: "We transport at your financial convenience"
