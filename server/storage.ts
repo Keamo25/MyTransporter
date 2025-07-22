@@ -2,12 +2,15 @@ import {
   users,
   transportRequests,
   bids,
+  gpsTracking,
   type User,
   type InsertUser,
   type InsertTransportRequest,
   type TransportRequest,
   type InsertBid,
   type Bid,
+  type GpsTracking,
+  type InsertGpsTracking,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, count } from "drizzle-orm";
@@ -38,6 +41,12 @@ export interface IStorage {
     pendingApproval: number;
     completedToday: number;
   }>;
+  
+  // GPS Tracking operations
+  createGpsTracking(tracking: InsertGpsTracking): Promise<GpsTracking>;
+  getGpsTrackingForRequest(requestId: number): Promise<GpsTracking[]>;
+  getGpsTrackingForDriver(driverId: number): Promise<GpsTracking[]>;
+  getLatestGpsTrackingForRequest(requestId: number): Promise<GpsTracking | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -214,6 +223,41 @@ export class DatabaseStorage implements IStorage {
       .returning();
 
     return updatedRequest;
+  }
+
+  // GPS Tracking operations
+  async createGpsTracking(tracking: InsertGpsTracking): Promise<GpsTracking> {
+    const [gpsTrack] = await db
+      .insert(gpsTracking)
+      .values(tracking)
+      .returning();
+    return gpsTrack;
+  }
+
+  async getGpsTrackingForRequest(requestId: number): Promise<GpsTracking[]> {
+    return await db
+      .select()
+      .from(gpsTracking)
+      .where(eq(gpsTracking.requestId, requestId))
+      .orderBy(desc(gpsTracking.timestamp));
+  }
+
+  async getGpsTrackingForDriver(driverId: number): Promise<GpsTracking[]> {
+    return await db
+      .select()
+      .from(gpsTracking)
+      .where(eq(gpsTracking.driverId, driverId))
+      .orderBy(desc(gpsTracking.timestamp));
+  }
+
+  async getLatestGpsTrackingForRequest(requestId: number): Promise<GpsTracking | undefined> {
+    const [latest] = await db
+      .select()
+      .from(gpsTracking)
+      .where(eq(gpsTracking.requestId, requestId))
+      .orderBy(desc(gpsTracking.timestamp))
+      .limit(1);
+    return latest;
   }
 }
 

@@ -16,6 +16,7 @@ import { Truck, Bell, User, LogOut, ClipboardList, Users, Clock, CheckCircle, Do
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { type TransportRequest, type Bid, registerUserSchema } from "@shared/schema";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { TrackingMap } from "@/components/tracking-map";
 import BidModal from "@/components/bid-modal";
 
 const getStatusColor = (status: string) => {
@@ -422,7 +423,7 @@ export default function AdminDashboard() {
                                   onClick={() => setSelectedTrackingRequest(request)}
                                 >
                                   <MapPin className="h-3 w-3 mr-1" />
-                                  Track
+                                  GPS Track
                                 </Button>
                                 <Button
                                   variant="outline"

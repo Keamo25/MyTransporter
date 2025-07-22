@@ -165,3 +165,52 @@ export type InsertTransportRequest = z.infer<typeof insertTransportRequestSchema
 export type TransportRequest = typeof transportRequests.$inferSelect;
 export type InsertBid = z.infer<typeof insertBidSchema>;
 export type Bid = typeof bids.$inferSelect;
+
+// GPS Tracking table for real-time delivery tracking
+export const gpsTracking = pgTable("gps_tracking", {
+  id: serial("id").primaryKey(),
+  requestId: integer("request_id").references(() => transportRequests.id).notNull(),
+  driverId: integer("driver_id").references(() => users.id).notNull(),
+  latitude: decimal("latitude", { precision: 10, scale: 8 }).notNull(),
+  longitude: decimal("longitude", { precision: 11, scale: 8 }).notNull(),
+  speed: decimal("speed", { precision: 5, scale: 2 }), // km/h
+  heading: decimal("heading", { precision: 5, scale: 2 }), // degrees
+  accuracy: decimal("accuracy", { precision: 8, scale: 2 }), // meters
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+  status: varchar("status").notNull().default("en_route"), // en_route, arrived_pickup, picked_up, en_route_delivery, delivered
+  estimatedArrival: timestamp("estimated_arrival"),
+  batteryLevel: integer("battery_level"), // percentage
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// GPS tracking relations
+export const gpsTrackingRelations = relations(gpsTracking, ({ one }) => ({
+  request: one(transportRequests, {
+    fields: [gpsTracking.requestId],
+    references: [transportRequests.id],
+  }),
+  driver: one(users, {
+    fields: [gpsTracking.driverId],
+    references: [users.id],
+  }),
+}));
+
+export type GpsTracking = typeof gpsTracking.$inferSelect;
+export type InsertGpsTracking = typeof gpsTracking.$inferInsert;
+
+// GPS tracking schema for API validation
+export const insertGpsTrackingSchema = createInsertSchema(gpsTracking).pick({
+  requestId: true,
+  driverId: true,
+  latitude: true,
+  longitude: true,
+  speed: true,
+  heading: true,
+  accuracy: true,
+  status: true,
+  estimatedArrival: true,
+  batteryLevel: true,
+});
+
+export type InsertGpsTrackingRequest = typeof insertGpsTrackingSchema._type;

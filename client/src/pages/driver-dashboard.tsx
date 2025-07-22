@@ -8,10 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Truck, Bell, User, LogOut, Mail, Phone, Calendar, Star, CheckCircle, Clock } from "lucide-react";
+import { Truck, Bell, User, LogOut, Mail, Phone, Calendar, Star, CheckCircle, Clock, Navigation } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { type TransportRequest, type Bid } from "@shared/schema";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { GpsTracker } from "@/components/gps-tracker";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -150,7 +151,7 @@ export default function DriverDashboard() {
                 <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
                   <User className="text-white text-sm" />
                 </div>
-                <span className="text-sm font-medium">{user?.firstName} {user?.lastName}</span>
+                <span className="text-sm font-medium">{(user as any)?.firstName} {(user as any)?.lastName}</span>
               </div>
               <Button variant="ghost" size="icon" onClick={() => {
                 fetch('/api/auth/logout', { method: 'POST' }).then(() => {
@@ -167,8 +168,9 @@ export default function DriverDashboard() {
       {/* Dashboard Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+            <TabsTrigger value="tracking">GPS Tracking</TabsTrigger>
             <TabsTrigger value="profile">My Profile</TabsTrigger>
           </TabsList>
 
@@ -300,6 +302,48 @@ export default function DriverDashboard() {
             </div>
           </TabsContent>
 
+          <TabsContent value="tracking" className="space-y-6">
+            <div className="max-w-4xl mx-auto">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Navigation className="mr-2 h-6 w-6" />
+                    GPS Tracking System
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 mb-6">
+                    Start GPS tracking for your active deliveries. This allows clients and admins to monitor delivery progress in real-time.
+                  </p>
+                  
+                  {/* Show GPS tracker for assigned requests */}
+                  {Array.isArray(myBids) && myBids.some((bid: Bid) => bid.status === 'accepted') ? (
+                    <div className="space-y-4">
+                      {myBids
+                        .filter((bid: Bid) => bid.status === 'accepted')
+                        .map((bid: Bid) => (
+                          <GpsTracker
+                            key={bid.requestId}
+                            requestId={bid.requestId}
+                            driverId={(user as any)?.id || 0}
+                            isDriver={true}
+                          />
+                        ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <Navigation className="mx-auto h-16 w-16 text-gray-300 mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No Active Deliveries</h3>
+                      <p className="text-gray-600">
+                        GPS tracking will be available once you have an accepted bid for a delivery request.
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
           <TabsContent value="profile" className="space-y-6">
             <div className="max-w-4xl mx-auto">
               <Card>
@@ -314,12 +358,12 @@ export default function DriverDashboard() {
                     </div>
                     <div>
                       <h3 className="text-2xl font-semibold text-gray-900">
-                        {user?.firstName} {user?.lastName}
+                        {(user as any)?.firstName} {(user as any)?.lastName}
                       </h3>
                       <p className="text-gray-600">Professional Driver</p>
                       <div className="flex items-center mt-2">
                         <Star className="h-4 w-4 text-yellow-500 mr-1" />
-                        <span className="text-sm text-gray-600">4.5/5 rating • Driver since {user?.createdAt ? new Date(user.createdAt).getFullYear() : '2023'}</span>
+                        <span className="text-sm text-gray-600">4.5/5 rating • Driver since {(user as any)?.createdAt ? new Date((user as any).createdAt).getFullYear() : '2023'}</span>
                       </div>
                     </div>
                   </div>
@@ -332,7 +376,7 @@ export default function DriverDashboard() {
                         <label className="text-sm font-medium text-gray-700">Email</label>
                         <div className="flex items-center space-x-3">
                           <Mail className="h-5 w-5 text-gray-400" />
-                          <Input value={user?.email || ''} disabled className="bg-gray-100" />
+                          <Input value={(user as any)?.email || ''} disabled className="bg-gray-100" />
                         </div>
                       </div>
                       <div className="space-y-2">
@@ -344,11 +388,11 @@ export default function DriverDashboard() {
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700">First Name</label>
-                        <Input defaultValue={user?.firstName || ''} />
+                        <Input defaultValue={(user as any)?.firstName || ''} />
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700">Last Name</label>
-                        <Input defaultValue={user?.lastName || ''} />
+                        <Input defaultValue={(user as any)?.lastName || ''} />
                       </div>
                     </div>
                   </div>

@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./auth";
 import { insertTransportRequestSchema, insertBidSchema } from "@shared/schema";
 import { z } from "zod";
+import { WebSocketServer, WebSocket } from 'ws';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -336,6 +337,100 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // GPS Tracking routes for real-time delivery tracking
+  app.post('/api/gps-tracking', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = req.user;
+      
+      if (!user || user.role !== 'driver') {
+        return res.status(403).json({ message: "Only drivers can submit GPS tracking data" });
+      }
+
+      const trackingData = {
+        ...req.body,
+        driverId: user.id,
+        latitude: parseFloat(req.body.latitude),
+        longitude: parseFloat(req.body.longitude),
+        speed: req.body.speed ? parseFloat(req.body.speed) : null,
+        heading: req.body.heading ? parseFloat(req.body.heading) : null,
+        accuracy: req.body.accuracy ? parseFloat(req.body.accuracy) : null,
+      };
+
+      const tracking = await storage.createGpsTracking(trackingData);
+      
+      // Broadcast location update to WebSocket clients
+      if (wss) {
+        const message = JSON.stringify({
+          type: 'location_update',
+          requestId: tracking.requestId,
+          driverId: tracking.driverId,
+          latitude: tracking.latitude,
+          longitude: tracking.longitude,
+          status: tracking.status,
+          timestamp: tracking.timestamp
+        });
+        
+        wss.clients.forEach(client => {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(message);
+          }
+        });
+      }
+      
+      res.json(tracking);
+    } catch (error) {
+      console.error("Error creating GPS tracking:", error);
+      res.status(500).json({ message: "Failed to create GPS tracking" });
+    }
+  });
+
+  app.get('/api/gps-tracking/:requestId', isAuthenticated, async (req: any, res) => {
+    try {
+      const requestId = parseInt(req.params.requestId);
+      const tracking = await storage.getGpsTrackingForRequest(requestId);
+      res.json(tracking);
+    } catch (error) {
+      console.error("Error fetching GPS tracking:", error);
+      res.status(500).json({ message: "Failed to fetch GPS tracking" });
+    }
+  });
+
+  app.get('/api/gps-tracking/driver/:driverId', isAuthenticated, async (req: any, res) => {
+    try {
+      const driverId = parseInt(req.params.driverId);
+      const tracking = await storage.getGpsTrackingForDriver(driverId);
+      res.json(tracking);
+    } catch (error) {
+      console.error("Error fetching driver GPS tracking:", error);
+      res.status(500).json({ message: "Failed to fetch driver GPS tracking" });
+    }
+  });
+
   const httpServer = createServer(app);
+  
+  // WebSocket server for real-time GPS tracking
+  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  
+  wss.on('connection', (ws) => {
+    console.log('New WebSocket client connected');
+    
+    ws.on('message', (message) => {
+      try {
+        const data = JSON.parse(message.toString());
+        
+        if (data.type === 'subscribe_tracking') {
+          // Subscribe client to tracking updates for specific request
+          ws.requestId = data.requestId;
+        }
+      } catch (error) {
+        console.error('Error processing WebSocket message:', error);
+      }
+    });
+    
+    ws.on('close', () => {
+      console.log('WebSocket client disconnected');
+    });
+  });
+  
   return httpServer;
 }

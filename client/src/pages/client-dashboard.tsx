@@ -15,6 +15,7 @@ import { Truck, Bell, User, LogOut, MapPin, Calendar, Package, Star, Mail, Phone
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { clientTransportRequestSchema, type TransportRequest } from "@shared/schema";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { TrackingMap } from "@/components/tracking-map";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -356,9 +357,20 @@ export default function ClientDashboard() {
                         <p className="text-sm text-gray-600 mb-2">
                           {request.pickupLocation} → {request.deliveryLocation}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 mb-3">
                           Created {new Date(request.createdAt!).toLocaleDateString()}
                         </p>
+                        
+                        {/* Show tracking for assigned/in-progress requests */}
+                        {(request.status === 'assigned' || request.status === 'in_progress') && (
+                          <div className="mt-4">
+                            <TrackingMap
+                              requestId={request.id}
+                              pickupLocation={request.pickupLocation}
+                              deliveryLocation={request.deliveryLocation}
+                            />
+                          </div>
+                        )}
                       </div>
                     ))
                   ) : (
