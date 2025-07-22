@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Truck, Bell, User, LogOut } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Truck, Bell, User, LogOut, Mail, Phone, Calendar, Star, CheckCircle, Clock } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { type TransportRequest, type Bid } from "@shared/schema";
 import { isUnauthorizedError } from "@/lib/authUtils";
@@ -24,6 +25,7 @@ const getStatusColor = (status: string) => {
 export default function DriverDashboard() {
   const { user, isLoading } = useAuth();
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [bidAmounts, setBidAmounts] = useState<{ [key: number]: string }>({});
   const [bidMessages, setBidMessages] = useState<{ [key: number]: string }>({});
 
@@ -164,14 +166,21 @@ export default function DriverDashboard() {
 
       {/* Dashboard Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Available Requests */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold text-gray-900">Available Requests</CardTitle>
-              </CardHeader>
-              <CardContent>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+            <TabsTrigger value="profile">My Profile</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="dashboard" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Available Requests */}
+              <div className="lg:col-span-2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-2xl font-bold text-gray-900">Available Requests</CardTitle>
+                  </CardHeader>
+                  <CardContent>
                 <div className="space-y-4">
                   {Array.isArray(requests) && requests.length === 0 ? (
                     <p className="text-gray-500 text-center py-8">No available requests</p>
@@ -287,8 +296,155 @@ export default function DriverDashboard() {
                 </div>
               </CardContent>
             </Card>
-          </div>
-        </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="profile" className="space-y-6">
+            <div className="max-w-4xl mx-auto">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-2xl font-bold text-gray-900">My Profile</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Profile Header */}
+                  <div className="flex items-center space-x-6">
+                    <div className="w-20 h-20 bg-green-600 rounded-full flex items-center justify-center">
+                      <User className="text-white text-3xl" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-semibold text-gray-900">
+                        {user?.firstName} {user?.lastName}
+                      </h3>
+                      <p className="text-gray-600">Professional Driver</p>
+                      <div className="flex items-center mt-2">
+                        <Star className="h-4 w-4 text-yellow-500 mr-1" />
+                        <span className="text-sm text-gray-600">4.5/5 rating • Driver since {user?.createdAt ? new Date(user.createdAt).getFullYear() : '2023'}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Contact Information */}
+                  <div className="bg-gray-50 rounded-lg p-6">
+                    <h4 className="font-semibold text-gray-900 mb-4">Contact Information</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex items-center space-x-3">
+                        <Mail className="h-5 w-5 text-gray-400" />
+                        <span className="text-gray-700">{user?.email}</span>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <Phone className="h-5 w-5 text-gray-400" />
+                        <span className="text-gray-700">+1 (555) 123-4567</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Performance Metrics */}
+                  <div className="bg-green-50 rounded-lg p-6">
+                    <h4 className="font-semibold text-green-900 mb-4">Performance Metrics</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div>
+                        <p className="text-sm text-green-700 mb-1">Total Bids</p>
+                        <p className="text-2xl font-bold text-green-900">{Array.isArray(myBids) ? myBids.length : 0}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-green-700 mb-1">Accepted Bids</p>
+                        <p className="text-2xl font-bold text-blue-600">
+                          {Array.isArray(myBids) ? myBids.filter(b => b.status === 'accepted').length : 0}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-green-700 mb-1">Success Rate</p>
+                        <p className="text-2xl font-bold text-yellow-600">
+                          {Array.isArray(myBids) && myBids.length > 0 
+                            ? Math.round((myBids.filter(b => b.status === 'accepted').length / myBids.length) * 100)
+                            : 0}%
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Vehicle Information */}
+                  <div className="bg-blue-50 rounded-lg p-6">
+                    <h4 className="font-semibold text-blue-900 mb-4">Vehicle Information</h4>
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-sm text-blue-700 mb-1">Vehicle Type</p>
+                        <p className="font-medium text-blue-900">2019 Ford Transit</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-blue-700 mb-1">License Plate</p>
+                        <p className="font-medium text-blue-900">TRK123</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-blue-700 mb-1">Max Capacity</p>
+                        <p className="font-medium text-blue-900">2,500 kg</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Recent Bid History */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-6">
+                    <h4 className="font-semibold text-gray-900 mb-4">Recent Bid Activity</h4>
+                    <div className="space-y-4">
+                      {Array.isArray(myBids) && myBids.length === 0 ? (
+                        <div className="text-center py-8">
+                          <Clock className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                          <p className="text-gray-500">No bids submitted yet</p>
+                          <p className="text-sm text-gray-400">Start bidding on available requests to build your profile</p>
+                        </div>
+                      ) : Array.isArray(myBids) ? (
+                        myBids.slice(0, 3).map((bid: Bid) => (
+                          <div key={bid.id} className="border border-gray-200 rounded-lg p-4">
+                            <div className="flex justify-between items-start mb-3">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                  <Truck className="h-5 w-5 text-green-600" />
+                                </div>
+                                <div>
+                                  <p className="font-medium text-gray-900">REQ-{bid.requestId}</p>
+                                  <p className="text-sm text-gray-600">Bid Amount: ${bid.amount}</p>
+                                </div>
+                              </div>
+                              <Badge className={getStatusColor(bid.status)}>
+                                {bid.status}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center justify-between text-sm text-gray-500">
+                              <div className="flex items-center space-x-2">
+                                <Calendar className="h-4 w-4" />
+                                <span>Submitted {new Date(bid.createdAt!).toLocaleDateString()}</span>
+                              </div>
+                              {bid.status === 'accepted' && (
+                                <div className="flex items-center space-x-1 text-green-600">
+                                  <CheckCircle className="h-4 w-4" />
+                                  <span className="font-medium">Selected</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-gray-500 text-center py-8">Loading bid history...</p>
+                      )}
+                    </div>
+                    {Array.isArray(myBids) && myBids.length > 3 && (
+                      <div className="mt-4 text-center">
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setActiveTab("dashboard")}
+                          className="text-green-600 border-green-200 hover:bg-green-50"
+                        >
+                          View All Bids
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

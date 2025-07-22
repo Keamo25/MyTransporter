@@ -9,8 +9,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Truck, Bell, User, LogOut } from "lucide-react";
+import { Truck, Bell, User, LogOut, MapPin, Calendar, Package, Star, Mail, Phone } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { clientTransportRequestSchema, type TransportRequest } from "@shared/schema";
 import { isUnauthorizedError } from "@/lib/authUtils";
@@ -29,6 +30,7 @@ const getStatusColor = (status: string) => {
 export default function ClientDashboard() {
   const { user, isLoading } = useAuth();
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("requests");
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -160,14 +162,21 @@ export default function ClientDashboard() {
 
       {/* Dashboard Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Request Form */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold text-gray-900">Create New Request</CardTitle>
-              </CardHeader>
-              <CardContent>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="requests">Transport Requests</TabsTrigger>
+            <TabsTrigger value="profile">My Profile</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="requests" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Request Form */}
+              <div className="lg:col-span-2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-2xl font-bold text-gray-900">Create New Request</CardTitle>
+                  </CardHeader>
+                  <CardContent>
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -358,8 +367,131 @@ export default function ClientDashboard() {
                 </div>
               </CardContent>
             </Card>
-          </div>
-        </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="profile" className="space-y-6">
+            <div className="max-w-4xl mx-auto">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-2xl font-bold text-gray-900">My Profile</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Profile Header */}
+                  <div className="flex items-center space-x-6">
+                    <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center">
+                      <User className="text-white text-3xl" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-semibold text-gray-900">
+                        {user?.firstName} {user?.lastName}
+                      </h3>
+                      <p className="text-gray-600">Client Account</p>
+                      <div className="flex items-center mt-2">
+                        <Star className="h-4 w-4 text-yellow-500 mr-1" />
+                        <span className="text-sm text-gray-600">Client since {user?.createdAt ? new Date(user.createdAt).getFullYear() : '2024'}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Contact Information */}
+                  <div className="bg-gray-50 rounded-lg p-6">
+                    <h4 className="font-semibold text-gray-900 mb-4">Contact Information</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex items-center space-x-3">
+                        <Mail className="h-5 w-5 text-gray-400" />
+                        <span className="text-gray-700">{user?.email}</span>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <Phone className="h-5 w-5 text-gray-400" />
+                        <span className="text-gray-700">+1 (555) 123-4567</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Request History Summary */}
+                  <div className="bg-blue-50 rounded-lg p-6">
+                    <h4 className="font-semibold text-blue-900 mb-4">Request Activity</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div>
+                        <p className="text-sm text-blue-700 mb-1">Total Requests</p>
+                        <p className="text-2xl font-bold text-blue-900">{Array.isArray(requests) ? requests.length : 0}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-blue-700 mb-1">Completed</p>
+                        <p className="text-2xl font-bold text-green-600">
+                          {Array.isArray(requests) ? requests.filter(r => r.status === 'completed').length : 0}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-blue-700 mb-1">In Progress</p>
+                        <p className="text-2xl font-bold text-orange-600">
+                          {Array.isArray(requests) ? requests.filter(r => r.status === 'in_progress' || r.status === 'assigned').length : 0}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Recent Requests in Profile */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-6">
+                    <h4 className="font-semibold text-gray-900 mb-4">Recent Transport Requests</h4>
+                    <div className="space-y-4">
+                      {Array.isArray(requests) && requests.length === 0 ? (
+                        <div className="text-center py-8">
+                          <Package className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                          <p className="text-gray-500">No transport requests yet</p>
+                          <p className="text-sm text-gray-400">Start by creating your first request in the Transport Requests tab</p>
+                        </div>
+                      ) : Array.isArray(requests) ? (
+                        requests.slice(0, 3).map((request: TransportRequest) => (
+                          <div key={request.id} className="border border-gray-200 rounded-lg p-4">
+                            <div className="flex justify-between items-start mb-3">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                  <MapPin className="h-5 w-5 text-blue-600" />
+                                </div>
+                                <div>
+                                  <p className="font-medium text-gray-900">REQ-{request.id}</p>
+                                  <p className="text-sm text-gray-600">
+                                    {request.pickupLocation} → {request.deliveryLocation}
+                                  </p>
+                                </div>
+                              </div>
+                              <Badge className={getStatusColor(request.status)}>
+                                {request.status}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center justify-between text-sm text-gray-500">
+                              <div className="flex items-center space-x-2">
+                                <Calendar className="h-4 w-4" />
+                                <span>Created {new Date(request.createdAt!).toLocaleDateString()}</span>
+                              </div>
+                              <span className="font-medium text-green-600">${request.budget}</span>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-gray-500 text-center py-8">Loading requests...</p>
+                      )}
+                    </div>
+                    {Array.isArray(requests) && requests.length > 3 && (
+                      <div className="mt-4 text-center">
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setActiveTab("requests")}
+                          className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                        >
+                          View All Requests
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

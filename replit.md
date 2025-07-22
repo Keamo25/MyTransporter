@@ -12,13 +12,22 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**Client and Driver Profile Sections (July 22, 2025)**
+- Added comprehensive profile sections for both clients and drivers
+- Implemented tabbed interface in client dashboard (Transport Requests | My Profile)
+- Implemented tabbed interface in driver dashboard (Dashboard | My Profile)
+- Client profiles show contact info, request activity metrics, and recent request history
+- Driver profiles show contact info, performance metrics, vehicle information, and bid history
+- Enhanced UI with professional styling and responsive design
+- Added "View Profile" functionality to bid section in admin dashboard for driver profiles
+- Created secure backend endpoint for driver profile data access
+
 **Driver Profile Viewing Feature (July 22, 2025)**
 - Added "View Profile" functionality to bid section in admin dashboard
 - Implemented comprehensive driver profile modal with professional design
 - Profile displays driver name, rating, contact information, and experience
 - Added recent performance metrics (completed jobs, on-time delivery percentage)
 - Included vehicle information section with truck details and capacity
-- Created secure backend endpoint for driver profile data access
 - Enhanced UI to match application design standards
 
 **Request Reassignment and Tracking Features (July 22, 2025)**
