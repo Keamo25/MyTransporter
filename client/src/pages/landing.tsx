@@ -13,8 +13,8 @@ export default function Landing() {
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-4">
                   <Truck className="text-white text-2xl" />
                 </div>
-                <h1 className="text-3xl font-bold text-gray-900">LogiFlow</h1>
-                <p className="text-gray-600 mt-2">Logistics Management Platform</p>
+                <h1 className="text-3xl font-bold text-gray-900">MyTransporter</h1>
+                <p className="text-gray-600 mt-2">We transport at your financial convenience</p>
               </div>
               
               <div className="space-y-4">

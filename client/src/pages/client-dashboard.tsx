@@ -130,7 +130,7 @@ export default function ClientDashboard() {
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <Truck className="text-primary text-xl" />
-                <span className="ml-2 text-xl font-bold text-gray-900">LogiFlow</span>
+                <span className="ml-2 text-xl font-bold text-gray-900">MyTransporter</span>
               </div>
               <div className="ml-8">
                 <Badge className="bg-blue-100 text-blue-800">Client Portal</Badge>
@@ -333,10 +333,10 @@ export default function ClientDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {requests?.length === 0 ? (
+                  {Array.isArray(requests) && requests.length === 0 ? (
                     <p className="text-gray-500 text-center py-8">No requests yet</p>
-                  ) : (
-                    requests?.map((request: TransportRequest) => (
+                  ) : Array.isArray(requests) ? (
+                    requests.map((request: TransportRequest) => (
                       <div key={request.id} className="border border-gray-200 rounded-lg p-4">
                         <div className="flex justify-between items-start mb-2">
                           <span className="text-sm font-medium text-gray-900">REQ-{request.id}</span>
@@ -352,6 +352,8 @@ export default function ClientDashboard() {
                         </p>
                       </div>
                     ))
+                  ) : (
+                    <p className="text-gray-500 text-center py-8">Loading requests...</p>
                   )}
                 </div>
               </CardContent>

@@ -134,7 +134,7 @@ export default function DriverDashboard() {
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <Truck className="text-primary text-xl" />
-                <span className="ml-2 text-xl font-bold text-gray-900">LogiFlow</span>
+                <span className="ml-2 text-xl font-bold text-gray-900">MyTransporter</span>
               </div>
               <div className="ml-8">
                 <Badge className="bg-green-100 text-green-800">Driver Portal</Badge>
@@ -173,10 +173,10 @@ export default function DriverDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {requests?.length === 0 ? (
+                  {Array.isArray(requests) && requests.length === 0 ? (
                     <p className="text-gray-500 text-center py-8">No available requests</p>
-                  ) : (
-                    requests?.map((request: TransportRequest) => (
+                  ) : Array.isArray(requests) ? (
+                    requests.map((request: TransportRequest) => (
                       <div key={request.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow duration-200">
                         <div className="flex justify-between items-start mb-4">
                           <div>
@@ -246,6 +246,8 @@ export default function DriverDashboard() {
                         </div>
                       </div>
                     ))
+                  ) : (
+                    <p className="text-gray-500 text-center py-8">Loading requests...</p>
                   )}
                 </div>
               </CardContent>
@@ -260,10 +262,10 @@ export default function DriverDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {myBids?.length === 0 ? (
+                  {Array.isArray(myBids) && myBids.length === 0 ? (
                     <p className="text-gray-500 text-center py-8">No bids yet</p>
-                  ) : (
-                    myBids?.map((bid: Bid) => (
+                  ) : Array.isArray(myBids) ? (
+                    myBids.map((bid: Bid) => (
                       <div key={bid.id} className="border border-gray-200 rounded-lg p-4">
                         <div className="flex justify-between items-start mb-2">
                           <span className="text-sm font-medium text-gray-900">REQ-{bid.requestId}</span>
@@ -279,6 +281,8 @@ export default function DriverDashboard() {
                         </p>
                       </div>
                     ))
+                  ) : (
+                    <p className="text-gray-500 text-center py-8">Loading bids...</p>
                   )}
                 </div>
               </CardContent>

@@ -80,7 +80,8 @@ export default function Login() {
                 <Truck className="text-white text-2xl" />
               </div>
               <CardTitle className="text-3xl font-bold text-gray-900">Sign In</CardTitle>
-              <p className="text-gray-600 mt-2">Welcome back to LogiFlow</p>
+              <p className="text-gray-600 mt-2">Welcome back to MyTransporter</p>
+              <p className="text-sm text-gray-500 mt-1">We transport at your financial convenience</p>
             </CardHeader>
             <CardContent>
               <Form {...form}>

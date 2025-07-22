@@ -117,7 +117,7 @@ export default function AdminDashboard() {
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <Truck className="text-primary text-xl" />
-                <span className="ml-2 text-xl font-bold text-gray-900">LogiFlow</span>
+                <span className="ml-2 text-xl font-bold text-gray-900">MyTransporter</span>
               </div>
               <div className="ml-8">
                 <Badge className="bg-purple-100 text-purple-800">Admin Portal</Badge>

@@ -84,7 +84,8 @@ export default function Register() {
                 <Truck className="text-white text-2xl" />
               </div>
               <CardTitle className="text-3xl font-bold text-gray-900">Create Account</CardTitle>
-              <p className="text-gray-600 mt-2">Join LogiFlow today</p>
+              <p className="text-gray-600 mt-2">Join MyTransporter today</p>
+              <p className="text-sm text-gray-500 mt-1">We transport at your financial convenience</p>
             </CardHeader>
             <CardContent>
               <Form {...form}>

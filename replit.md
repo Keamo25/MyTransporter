@@ -1,14 +1,23 @@
-# LogiFlow - Logistics Management Platform
+# MyTransporter - Logistics Management Platform
 
 ## Overview
 
-LogiFlow is a comprehensive logistics management platform that connects clients, drivers, and administrators in a bidding-based transport request system. The application features role-based authentication, real-time bid management, and administrative oversight capabilities.
+MyTransporter is a comprehensive logistics management platform that connects clients, drivers, and administrators in a bidding-based transport request system. The application features role-based authentication, real-time bid management, and administrative oversight capabilities.
+
+**Application Slogan:** "We transport at your financial convenience"
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
+
+**Application Rebranding (July 22, 2025)**
+- Changed application name from "LogiFlow" to "MyTransporter"
+- Added application slogan: "We transport at your financial convenience"
+- Updated branding across all pages: landing, login, register, and dashboard pages
+- Fixed bidding system validation errors for proper amount and date handling
+- Resolved TypeScript errors in dashboard components with proper array type checking
 
 **Authentication System Overhaul (July 16, 2025)**
 - Replaced Replit Auth with email/password authentication
