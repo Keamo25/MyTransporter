@@ -12,6 +12,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**Request Reassignment and Tracking Features (July 22, 2025)**
+- Added request reassignment functionality for admin users
+- Implemented comprehensive request tracking with status updates
+- Added Track and Reassign buttons for assigned/in-progress requests
+- Created modal interfaces for tracking progress and reassigning drivers
+- Status update options: Start Journey, Mark Complete, Cancel Request
+- Reassignment feature removes current driver and reopens for new bidding
+- Added backend endpoints for /reassign and /status updates with proper validation
+
 **Admin User Registration Feature (July 22, 2025)**
 - Added comprehensive user registration section to admin dashboard
 - Implemented tabbed interface for admin portal (Request Management | User Registration)

@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Truck, Bell, User, LogOut, ClipboardList, Users, Clock, CheckCircle, Download, UserPlus } from "lucide-react";
+import { Truck, Bell, User, LogOut, ClipboardList, Users, Clock, CheckCircle, Download, UserPlus, RefreshCw, MapPin } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { type TransportRequest, type Bid, registerUserSchema } from "@shared/schema";
 import { isUnauthorizedError } from "@/lib/authUtils";
@@ -35,6 +35,8 @@ export default function AdminDashboard() {
   const [selectedRequestId, setSelectedRequestId] = useState<number | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [activeTab, setActiveTab] = useState<string>("requests");
+  const [selectedTrackingRequest, setSelectedTrackingRequest] = useState<TransportRequest | null>(null);
+  const [selectedReassignRequest, setSelectedReassignRequest] = useState<TransportRequest | null>(null);
   
   // User registration form
   const registerForm = useForm({
@@ -101,6 +103,76 @@ export default function AdminDashboard() {
   const onRegisterSubmit = (data: any) => {
     registerUserMutation.mutate(data);
   };
+
+  // Re-assignment mutation
+  const reassignRequestMutation = useMutation({
+    mutationFn: async ({ requestId }: { requestId: number }) => {
+      const response = await apiRequest("PATCH", `/api/transport-requests/${requestId}/reassign`);
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Request has been reassigned and reopened for bidding",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/transport-requests"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      setSelectedReassignRequest(null);
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 500);
+        return;
+      }
+      toast({
+        title: "Error",
+        description: "Failed to reassign request",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Update status mutation
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({ requestId, status }: { requestId: number; status: string }) => {
+      const response = await apiRequest("PATCH", `/api/transport-requests/${requestId}/status`, { status });
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Request status updated successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/transport-requests"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      setSelectedTrackingRequest(null);
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 500);
+        return;
+      }
+      toast({
+        title: "Error",
+        description: "Failed to update request status",
+        variant: "destructive",
+      });
+    },
+  });
 
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ["/api/admin/stats"],
@@ -332,20 +404,37 @@ export default function AdminDashboard() {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          {request.status === "pending" && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setSelectedRequestId(request.id)}
-                            >
-                              View Bids
-                            </Button>
-                          )}
-                          {request.status === "assigned" && (
-                            <Button variant="outline" size="sm">
-                              Track
-                            </Button>
-                          )}
+                          <div className="flex space-x-2">
+                            {request.status === "pending" && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setSelectedRequestId(request.id)}
+                              >
+                                View Bids
+                              </Button>
+                            )}
+                            {(request.status === "assigned" || request.status === "in_progress") && (
+                              <>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setSelectedTrackingRequest(request)}
+                                >
+                                  <MapPin className="h-3 w-3 mr-1" />
+                                  Track
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setSelectedReassignRequest(request)}
+                                >
+                                  <RefreshCw className="h-3 w-3 mr-1" />
+                                  Reassign
+                                </Button>
+                              </>
+                            )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))
@@ -475,6 +564,113 @@ export default function AdminDashboard() {
           onClose={() => setSelectedRequestId(null)}
           onSelectDriver={(driverId) => assignDriverMutation.mutate({ requestId: selectedRequestId, driverId })}
         />
+      )}
+
+      {/* Request Tracking Modal */}
+      {selectedTrackingRequest && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Track Request REQ-{selectedTrackingRequest.id}</h3>
+              <Button variant="ghost" size="sm" onClick={() => setSelectedTrackingRequest(null)}>
+                ×
+              </Button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm text-gray-600">Current Status</p>
+                <Badge className={getStatusColor(selectedTrackingRequest.status)}>
+                  {selectedTrackingRequest.status}
+                </Badge>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Route</p>
+                <p className="font-medium">{selectedTrackingRequest.pickupLocation} → {selectedTrackingRequest.deliveryLocation}</p>
+              </div>
+              {selectedTrackingRequest.assignedDriverId && (
+                <div>
+                  <p className="text-sm text-gray-600">Driver ID</p>
+                  <p className="font-medium">#{selectedTrackingRequest.assignedDriverId}</p>
+                </div>
+              )}
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">Update Status</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {selectedTrackingRequest.status === "assigned" && (
+                    <Button
+                      size="sm"
+                      onClick={() => updateStatusMutation.mutate({ requestId: selectedTrackingRequest.id, status: "in_progress" })}
+                      disabled={updateStatusMutation.isPending}
+                    >
+                      Start Journey
+                    </Button>
+                  )}
+                  {selectedTrackingRequest.status === "in_progress" && (
+                    <Button
+                      size="sm"
+                      onClick={() => updateStatusMutation.mutate({ requestId: selectedTrackingRequest.id, status: "completed" })}
+                      disabled={updateStatusMutation.isPending}
+                    >
+                      Mark Complete
+                    </Button>
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => updateStatusMutation.mutate({ requestId: selectedTrackingRequest.id, status: "cancelled" })}
+                    disabled={updateStatusMutation.isPending}
+                  >
+                    Cancel Request
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Request Reassignment Modal */}
+      {selectedReassignRequest && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Reassign Request REQ-{selectedReassignRequest.id}</h3>
+              <Button variant="ghost" size="sm" onClick={() => setSelectedReassignRequest(null)}>
+                ×
+              </Button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm text-gray-600">Route</p>
+                <p className="font-medium">{selectedReassignRequest.pickupLocation} → {selectedReassignRequest.deliveryLocation}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Currently Assigned To</p>
+                <p className="font-medium">Driver #{selectedReassignRequest.assignedDriverId}</p>
+              </div>
+              <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
+                <p className="text-sm text-yellow-800">
+                  <strong>Warning:</strong> Reassigning will remove the current driver assignment and reopen the request for new bids. The assigned driver will be notified.
+                </p>
+              </div>
+              <div className="flex space-x-2 pt-4">
+                <Button
+                  onClick={() => reassignRequestMutation.mutate({ requestId: selectedReassignRequest.id })}
+                  disabled={reassignRequestMutation.isPending}
+                  className="bg-orange-600 hover:bg-orange-700"
+                >
+                  {reassignRequestMutation.isPending ? "Reassigning..." : "Confirm Reassignment"}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setSelectedReassignRequest(null)}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

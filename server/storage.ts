@@ -178,6 +178,43 @@ export class DatabaseStorage implements IStorage {
       completedToday: completedToday.count,
     };
   }
+
+  async reassignTransportRequest(requestId: number): Promise<TransportRequest> {
+    // Reset the request to pending status and remove assigned driver
+    const [updatedRequest] = await db
+      .update(transportRequests)
+      .set({
+        status: "pending",
+        assignedDriverId: null,
+        updatedAt: new Date(),
+      })
+      .where(eq(transportRequests.id, requestId))
+      .returning();
+    
+    // Also reject all existing bids for this request to allow new bidding
+    await db
+      .update(bids)
+      .set({
+        status: "rejected",
+        updatedAt: new Date(),
+      })
+      .where(eq(bids.requestId, requestId));
+
+    return updatedRequest;
+  }
+
+  async updateTransportRequestStatus(requestId: number, status: string): Promise<TransportRequest> {
+    const [updatedRequest] = await db
+      .update(transportRequests)
+      .set({
+        status,
+        updatedAt: new Date(),
+      })
+      .where(eq(transportRequests.id, requestId))
+      .returning();
+
+    return updatedRequest;
+  }
 }
 
 export const storage = new DatabaseStorage();

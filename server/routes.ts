@@ -242,6 +242,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Reassign request (admin only)
+  app.patch('/api/transport-requests/:id/reassign', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = req.user;
+      const requestId = parseInt(req.params.id);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Only admins can reassign requests" });
+      }
+
+      const request = await storage.getTransportRequestById(requestId);
+      
+      if (!request) {
+        return res.status(404).json({ message: "Request not found" });
+      }
+
+      if (request.status !== 'assigned' && request.status !== 'in_progress') {
+        return res.status(400).json({ message: "Only assigned or in-progress requests can be reassigned" });
+      }
+
+      const updatedRequest = await storage.reassignTransportRequest(requestId);
+      res.json(updatedRequest);
+    } catch (error) {
+      console.error("Error reassigning request:", error);
+      res.status(500).json({ message: "Failed to reassign request" });
+    }
+  });
+
+  // Update request status (admin only)
+  app.patch('/api/transport-requests/:id/status', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = req.user;
+      const requestId = parseInt(req.params.id);
+      const { status } = req.body;
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Only admins can update request status" });
+      }
+
+      const validStatuses = ['pending', 'assigned', 'in_progress', 'completed', 'cancelled'];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({ message: "Invalid status" });
+      }
+
+      const request = await storage.getTransportRequestById(requestId);
+      
+      if (!request) {
+        return res.status(404).json({ message: "Request not found" });
+      }
+
+      const updatedRequest = await storage.updateTransportRequestStatus(requestId, status);
+      res.json(updatedRequest);
+    } catch (error) {
+      console.error("Error updating request status:", error);
+      res.status(500).json({ message: "Failed to update request status" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
