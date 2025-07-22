@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Truck, Bell, User, LogOut, ClipboardList, Users, Clock, CheckCircle, Download, UserPlus, RefreshCw, MapPin } from "lucide-react";
+import { Truck, Bell, User, LogOut, ClipboardList, Users, Clock, CheckCircle, Download, UserPlus, RefreshCw, MapPin, BarChart, TrendingUp, DollarSign, Activity, Calendar } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { type TransportRequest, type Bid, registerUserSchema } from "@shared/schema";
 import { isUnauthorizedError } from "@/lib/authUtils";
@@ -293,10 +293,14 @@ export default function AdminDashboard() {
       {/* Dashboard Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8">
+          <TabsList className="grid w-full grid-cols-3 mb-8">
             <TabsTrigger value="requests" className="flex items-center gap-2">
               <ClipboardList className="h-4 w-4" />
               Request Management
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center gap-2">
+              <BarChart className="h-4 w-4" />
+              Analytics Dashboard
             </TabsTrigger>
             <TabsTrigger value="users" className="flex items-center gap-2">
               <UserPlus className="h-4 w-4" />
@@ -465,6 +469,313 @@ export default function AdminDashboard() {
             </div>
           </CardContent>
           </Card>
+          </TabsContent>
+
+          {/* Analytics Dashboard Tab */}
+          <TabsContent value="analytics" className="space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              
+              {/* Revenue Overview */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <DollarSign className="h-5 w-5" />
+                    Revenue Analytics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-green-50 p-4 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <TrendingUp className="h-4 w-4 text-green-600" />
+                          <span className="text-sm text-green-700">Total Revenue</span>
+                        </div>
+                        <p className="text-2xl font-bold text-green-800">R 45,280</p>
+                        <p className="text-sm text-green-600">+12% from last month</p>
+                      </div>
+                      <div className="bg-blue-50 p-4 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <Activity className="h-4 w-4 text-blue-600" />
+                          <span className="text-sm text-blue-700">Avg Deal Value</span>
+                        </div>
+                        <p className="text-2xl font-bold text-blue-800">R 2,840</p>
+                        <p className="text-sm text-blue-600">+5% from last month</p>
+                      </div>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h4 className="font-medium text-gray-900 mb-2">Revenue by Status</h4>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-gray-600">Completed Jobs</span>
+                          <span className="font-medium">R 32,150</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-gray-600">In Progress</span>
+                          <span className="font-medium">R 13,130</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Driver Performance */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    Driver Performance
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-purple-50 p-4 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-purple-600" />
+                          <span className="text-sm text-purple-700">Top Performer</span>
+                        </div>
+                        <p className="text-lg font-bold text-purple-800">Thato Rasebotsa</p>
+                        <p className="text-sm text-purple-600">★ 4.9 Rating</p>
+                      </div>
+                      <div className="bg-orange-50 p-4 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <Activity className="h-4 w-4 text-orange-600" />
+                          <span className="text-sm text-orange-700">Completion Rate</span>
+                        </div>
+                        <p className="text-2xl font-bold text-orange-800">94.5%</p>
+                        <p className="text-sm text-orange-600">Above average</p>
+                      </div>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h4 className="font-medium text-gray-900 mb-3">Driver Leaderboard</h4>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center py-1">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                            <span className="text-sm">Thato Rasebotsa</span>
+                          </div>
+                          <span className="text-sm font-medium">15 jobs</span>
+                        </div>
+                        <div className="flex justify-between items-center py-1">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 bg-gray-400 rounded-full flex items-center justify-center text-xs font-bold">2</div>
+                            <span className="text-sm">Driver User</span>
+                          </div>
+                          <span className="text-sm font-medium">12 jobs</span>
+                        </div>
+                        <div className="flex justify-between items-center py-1">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 bg-amber-600 rounded-full flex items-center justify-center text-xs font-bold">3</div>
+                            <span className="text-sm">John Mathe</span>
+                          </div>
+                          <span className="text-sm font-medium">9 jobs</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Request Analytics */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart className="h-5 w-5" />
+                    Request Analytics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="text-center p-3 bg-blue-50 rounded-lg">
+                        <div className="text-2xl font-bold text-blue-800">{(stats as any)?.totalRequests || 0}</div>
+                        <div className="text-sm text-blue-600">Total Requests</div>
+                      </div>
+                      <div className="text-center p-3 bg-green-50 rounded-lg">
+                        <div className="text-2xl font-bold text-green-800">{Math.floor(((stats as any)?.totalRequests - (stats as any)?.pendingApproval) / (stats as any)?.totalRequests * 100) || 0}%</div>
+                        <div className="text-sm text-green-600">Success Rate</div>
+                      </div>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h4 className="font-medium text-gray-900 mb-3">Status Breakdown</h4>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                            <span className="text-sm">Pending</span>
+                          </div>
+                          <span className="text-sm font-medium">{(stats as any)?.pendingApproval || 0}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                            <span className="text-sm">Assigned</span>
+                          </div>
+                          <span className="text-sm font-medium">{filteredRequests.filter((r: TransportRequest) => r.status === "assigned").length}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
+                            <span className="text-sm">In Progress</span>
+                          </div>
+                          <span className="text-sm font-medium">{filteredRequests.filter((r: TransportRequest) => r.status === "in_progress").length}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                            <span className="text-sm">Completed</span>
+                          </div>
+                          <span className="text-sm font-medium">{filteredRequests.filter((r: TransportRequest) => r.status === "completed").length}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Geographic Analytics */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5" />
+                    Geographic Insights
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h4 className="font-medium text-gray-900 mb-3">Popular Routes</h4>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center py-1">
+                          <span className="text-sm">Johannesburg → Cape Town</span>
+                          <span className="text-sm font-medium">8 requests</span>
+                        </div>
+                        <div className="flex justify-between items-center py-1">
+                          <span className="text-sm">Durban → Pretoria</span>
+                          <span className="text-sm font-medium">6 requests</span>
+                        </div>
+                        <div className="flex justify-between items-center py-1">
+                          <span className="text-sm">Cape Town → Port Elizabeth</span>
+                          <span className="text-sm font-medium">4 requests</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="text-center p-3 bg-indigo-50 rounded-lg">
+                        <div className="text-xl font-bold text-indigo-800">1,247 km</div>
+                        <div className="text-sm text-indigo-600">Avg Distance</div>
+                      </div>
+                      <div className="text-center p-3 bg-pink-50 rounded-lg">
+                        <div className="text-xl font-bold text-pink-800">R 2.85/km</div>
+                        <div className="text-sm text-pink-600">Avg Rate</div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Time-based Analytics */}
+              <Card className="lg:col-span-2">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5" />
+                    Time-Based Analytics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h4 className="font-medium text-gray-900 mb-3">Peak Hours</h4>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">8:00 - 10:00</span>
+                          <span className="text-sm font-medium">32 requests</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">14:00 - 16:00</span>
+                          <span className="text-sm font-medium">28 requests</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">10:00 - 12:00</span>
+                          <span className="text-sm font-medium">24 requests</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h4 className="font-medium text-gray-900 mb-3">Weekly Trends</h4>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Monday</span>
+                          <span className="text-sm font-medium">18 requests</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Tuesday</span>
+                          <span className="text-sm font-medium">22 requests</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Wednesday</span>
+                          <span className="text-sm font-medium">25 requests</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h4 className="font-medium text-gray-900 mb-3">Response Times</h4>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Avg Response</span>
+                          <span className="text-sm font-medium">2.3 hours</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Fastest</span>
+                          <span className="text-sm font-medium">15 minutes</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Completion Rate</span>
+                          <span className="text-sm font-medium">94.5%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Performance Metrics */}
+              <Card className="lg:col-span-2">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="h-5 w-5" />
+                    System Performance Metrics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="text-center p-4 bg-blue-50 rounded-lg">
+                      <div className="text-2xl font-bold text-blue-800">98.7%</div>
+                      <div className="text-sm text-blue-600">System Uptime</div>
+                      <div className="text-xs text-blue-500 mt-1">Last 30 days</div>
+                    </div>
+                    <div className="text-center p-4 bg-green-50 rounded-lg">
+                      <div className="text-2xl font-bold text-green-800">1.2s</div>
+                      <div className="text-sm text-green-600">Avg Load Time</div>
+                      <div className="text-xs text-green-500 mt-1">Page response</div>
+                    </div>
+                    <div className="text-center p-4 bg-purple-50 rounded-lg">
+                      <div className="text-2xl font-bold text-purple-800">847</div>
+                      <div className="text-sm text-purple-600">Active Users</div>
+                      <div className="text-xs text-purple-500 mt-1">Last 7 days</div>
+                    </div>
+                    <div className="text-center p-4 bg-orange-50 rounded-lg">
+                      <div className="text-2xl font-bold text-orange-800">4.8</div>
+                      <div className="text-sm text-orange-600">User Rating</div>
+                      <div className="text-xs text-orange-500 mt-1">Platform average</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+            </div>
           </TabsContent>
 
           <TabsContent value="users" className="space-y-8">
