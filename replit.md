@@ -22,6 +22,16 @@ Preferred communication style: Simple, everyday language.
 - Added "View Profile" functionality to bid section in admin dashboard for driver profiles
 - Created secure backend endpoint for driver profile data access
 
+**Profile Editability and Currency System Update (July 22, 2025)**
+- Made profile sections editable for both clients and drivers
+- Added form fields for personal information (first name, last name, phone number)
+- Added vehicle information editing capability for drivers
+- Email fields are disabled as they serve as unique identifiers
+- Changed entire system currency from USD ($) to South African Rand (R)
+- Updated all currency displays across client dashboard, driver dashboard, admin dashboard, and bid modal
+- Fixed input validation warnings with proper defaultValue usage
+- Enhanced user experience with professional form styling and update buttons
+
 **Driver Profile Viewing Feature (July 22, 2025)**
 - Added "View Profile" functionality to bid section in admin dashboard
 - Implemented comprehensive driver profile modal with professional design

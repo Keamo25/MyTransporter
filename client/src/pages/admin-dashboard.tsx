@@ -397,7 +397,7 @@ export default function AdminDashboard() {
                       <TableRow key={request.id}>
                         <TableCell className="font-medium">REQ-{request.id}</TableCell>
                         <TableCell>{request.pickupLocation} → {request.deliveryLocation}</TableCell>
-                        <TableCell>${request.budget}</TableCell>
+                        <TableCell>R{request.budget}</TableCell>
                         <TableCell>
                           <Badge className={getStatusColor(request.status)}>
                             {request.status}

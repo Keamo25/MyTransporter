@@ -313,7 +313,7 @@ export default function ClientDashboard() {
                         name="budget"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Budget ($)</FormLabel>
+                            <FormLabel>Budget (R)</FormLabel>
                             <FormControl>
                               <Input type="number" step="0.01" placeholder="0" {...field} />
                             </FormControl>
@@ -399,14 +399,31 @@ export default function ClientDashboard() {
                   <div className="bg-gray-50 rounded-lg p-6">
                     <h4 className="font-semibold text-gray-900 mb-4">Contact Information</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="flex items-center space-x-3">
-                        <Mail className="h-5 w-5 text-gray-400" />
-                        <span className="text-gray-700">{user?.email}</span>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Email</label>
+                        <div className="flex items-center space-x-3">
+                          <Mail className="h-5 w-5 text-gray-400" />
+                          <Input value={user?.email || ''} disabled className="bg-gray-100" />
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-3">
-                        <Phone className="h-5 w-5 text-gray-400" />
-                        <span className="text-gray-700">+1 (555) 123-4567</span>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Phone Number</label>
+                        <div className="flex items-center space-x-3">
+                          <Phone className="h-5 w-5 text-gray-400" />
+                          <Input placeholder="+27 (xxx) xxx-xxxx" />
+                        </div>
                       </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">First Name</label>
+                        <Input defaultValue={user?.firstName || ''} />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Last Name</label>
+                        <Input defaultValue={user?.lastName || ''} />
+                      </div>
+                    </div>
+                    <div className="mt-4 flex justify-end">
+                      <Button className="bg-blue-600 hover:bg-blue-700">Update Profile</Button>
                     </div>
                   </div>
 
@@ -467,7 +484,7 @@ export default function ClientDashboard() {
                                 <Calendar className="h-4 w-4" />
                                 <span>Created {new Date(request.createdAt!).toLocaleDateString()}</span>
                               </div>
-                              <span className="font-medium text-green-600">${request.budget}</span>
+                              <span className="font-medium text-green-600">R{request.budget}</span>
                             </div>
                           </div>
                         ))

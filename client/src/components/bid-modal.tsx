@@ -68,7 +68,7 @@ export default function BidModal({ requestId, onClose, onSelectDriver }: BidModa
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Client Budget</p>
-                  <p className="font-medium text-green-600">${request?.budget}</p>
+                  <p className="font-medium text-green-600">R{request?.budget}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Pickup Date</p>
@@ -112,7 +112,7 @@ export default function BidModal({ requestId, onClose, onSelectDriver }: BidModa
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                           <div>
                             <p className="text-sm text-gray-600">Bid Amount</p>
-                            <p className="text-lg font-bold text-green-600">${bid.amount}</p>
+                            <p className="text-lg font-bold text-green-600">R{bid.amount}</p>
                           </div>
                           <div>
                             <p className="text-sm text-gray-600">Estimated Delivery</p>

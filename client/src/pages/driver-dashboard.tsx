@@ -283,7 +283,7 @@ export default function DriverDashboard() {
                           </Badge>
                         </div>
                         <p className="text-sm text-gray-600 mb-2">
-                          My bid: <span className="font-medium">${bid.amount}</span>
+                          My bid: <span className="font-medium">R{bid.amount}</span>
                         </p>
                         <p className="text-xs text-gray-500">
                           Submitted {new Date(bid.createdAt!).toLocaleDateString()}
@@ -328,14 +328,54 @@ export default function DriverDashboard() {
                   <div className="bg-gray-50 rounded-lg p-6">
                     <h4 className="font-semibold text-gray-900 mb-4">Contact Information</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="flex items-center space-x-3">
-                        <Mail className="h-5 w-5 text-gray-400" />
-                        <span className="text-gray-700">{user?.email}</span>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Email</label>
+                        <div className="flex items-center space-x-3">
+                          <Mail className="h-5 w-5 text-gray-400" />
+                          <Input value={user?.email || ''} disabled className="bg-gray-100" />
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-3">
-                        <Phone className="h-5 w-5 text-gray-400" />
-                        <span className="text-gray-700">+1 (555) 123-4567</span>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Phone Number</label>
+                        <div className="flex items-center space-x-3">
+                          <Phone className="h-5 w-5 text-gray-400" />
+                          <Input placeholder="+27 (xxx) xxx-xxxx" />
+                        </div>
                       </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">First Name</label>
+                        <Input defaultValue={user?.firstName || ''} />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Last Name</label>
+                        <Input defaultValue={user?.lastName || ''} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Vehicle Information - Editable */}
+                  <div className="bg-blue-50 rounded-lg p-6">
+                    <h4 className="font-semibold text-blue-900 mb-4">Vehicle Information</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-blue-700">Vehicle Type</label>
+                        <Input defaultValue="2019 Ford Transit" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-blue-700">License Plate</label>
+                        <Input defaultValue="TRK123" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-blue-700">Max Capacity (kg)</label>
+                        <Input type="number" defaultValue="2500" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-blue-700">Vehicle Color</label>
+                        <Input defaultValue="White" />
+                      </div>
+                    </div>
+                    <div className="mt-4 flex justify-end">
+                      <Button className="bg-blue-600 hover:bg-blue-700">Update Profile</Button>
                     </div>
                   </div>
 
@@ -364,24 +404,7 @@ export default function DriverDashboard() {
                     </div>
                   </div>
 
-                  {/* Vehicle Information */}
-                  <div className="bg-blue-50 rounded-lg p-6">
-                    <h4 className="font-semibold text-blue-900 mb-4">Vehicle Information</h4>
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-sm text-blue-700 mb-1">Vehicle Type</p>
-                        <p className="font-medium text-blue-900">2019 Ford Transit</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-blue-700 mb-1">License Plate</p>
-                        <p className="font-medium text-blue-900">TRK123</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-blue-700 mb-1">Max Capacity</p>
-                        <p className="font-medium text-blue-900">2,500 kg</p>
-                      </div>
-                    </div>
-                  </div>
+
 
                   {/* Recent Bid History */}
                   <div className="bg-white border border-gray-200 rounded-lg p-6">
@@ -403,7 +426,7 @@ export default function DriverDashboard() {
                                 </div>
                                 <div>
                                   <p className="font-medium text-gray-900">REQ-{bid.requestId}</p>
-                                  <p className="text-sm text-gray-600">Bid Amount: ${bid.amount}</p>
+                                  <p className="text-sm text-gray-600">Bid Amount: R{bid.amount}</p>
                                 </div>
                               </div>
                               <Badge className={getStatusColor(bid.status)}>
