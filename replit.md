@@ -12,6 +12,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**Driver Profile Viewing Feature (July 22, 2025)**
+- Added "View Profile" functionality to bid section in admin dashboard
+- Implemented comprehensive driver profile modal with professional design
+- Profile displays driver name, rating, contact information, and experience
+- Added recent performance metrics (completed jobs, on-time delivery percentage)
+- Included vehicle information section with truck details and capacity
+- Created secure backend endpoint for driver profile data access
+- Enhanced UI to match application design standards
+
 **Request Reassignment and Tracking Features (July 22, 2025)**
 - Added request reassignment functionality for admin users
 - Implemented comprehensive request tracking with status updates

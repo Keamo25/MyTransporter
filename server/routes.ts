@@ -44,9 +44,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         pickupDate: pickupDateTime,
         deliveryDate: deliveryDateTime,
         itemDescription: clientData.itemDescription,
-        weight: clientData.weight,
+        weight: clientData.weight.toString(),
         dimensions: clientData.dimensions,
-        budget: clientData.budget,
+        budget: clientData.budget.toString(),
         clientId: user.id,
       });
       
@@ -315,7 +315,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Unauthorized" });
       }
 
-      const driver = await storage.getUser(driverId);
+      const driver = await storage.getUserById(driverId);
       
       if (!driver || driver.role !== 'driver') {
         return res.status(404).json({ message: "Driver not found" });

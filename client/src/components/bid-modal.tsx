@@ -183,8 +183,10 @@ export default function BidModal({ requestId, onClose, onSelectDriver }: BidModa
                     <User className="text-white text-2xl" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold">Driver {selectedDriverId}</h3>
-                    <div className="flex items-center text-sm text-gray-600">
+                    <h3 className="text-xl font-semibold text-gray-900">
+                      {driverProfile?.firstName || `Driver`} {driverProfile?.lastName || selectedDriverId}
+                    </h3>
+                    <div className="flex items-center text-gray-600">
                       <Star className="h-4 w-4 text-yellow-500 mr-1" />
                       <span>4.5/5 rating (23 reviews)</span>
                     </div>
@@ -193,45 +195,45 @@ export default function BidModal({ requestId, onClose, onSelectDriver }: BidModa
                 
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
-                    <Mail className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm">{driverProfile?.email || `driver${selectedDriverId}@example.com`}</span>
+                    <Mail className="h-5 w-5 text-gray-400" />
+                    <span className="text-gray-700">{driverProfile?.email || `driver${selectedDriverId}@example.com`}</span>
                   </div>
                   
                   <div className="flex items-center space-x-3">
-                    <Phone className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm">+1 (555) 123-4567</span>
+                    <Phone className="h-5 w-5 text-gray-400" />
+                    <span className="text-gray-700">+1 (555) 123-4567</span>
                   </div>
                   
                   <div className="flex items-center space-x-3">
-                    <Calendar className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm">Driver since {driverProfile?.createdAt ? new Date(driverProfile.createdAt).getFullYear() : '2023'}</span>
+                    <Calendar className="h-5 w-5 text-gray-400" />
+                    <span className="text-gray-700">Driver since {driverProfile?.createdAt ? new Date(driverProfile.createdAt).getFullYear() : '2023'}</span>
                   </div>
                 </div>
                 
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <h4 className="font-medium text-sm text-gray-900 mb-2">Recent Performance</h4>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h4 className="font-semibold text-gray-900 mb-3">Recent Performance</h4>
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-gray-600">Completed Jobs</p>
-                      <p className="font-semibold">47</p>
+                      <p className="text-sm text-gray-600 mb-1">Completed Jobs</p>
+                      <p className="text-xl font-bold text-gray-900">47</p>
                     </div>
                     <div>
-                      <p className="text-gray-600">On-Time Delivery</p>
-                      <p className="font-semibold text-green-600">96%</p>
+                      <p className="text-sm text-gray-600 mb-1">On-Time Delivery</p>
+                      <p className="text-xl font-bold text-green-600">96%</p>
                     </div>
                   </div>
                 </div>
                 
-                <div className="bg-blue-50 rounded-lg p-3">
-                  <h4 className="font-medium text-sm text-blue-900 mb-1">Vehicle Information</h4>
-                  <p className="text-sm text-blue-700">2019 Ford Transit - License: TRK123</p>
-                  <p className="text-sm text-blue-700">Max capacity: 2,500 kg</p>
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <h4 className="font-semibold text-blue-900 mb-3">Vehicle Information</h4>
+                  <p className="text-blue-700 font-medium">2019 Ford Transit - License: TRK123</p>
+                  <p className="text-blue-700">Max capacity: 2,500 kg</p>
                 </div>
                 
                 <Button
                   variant="outline"
                   onClick={() => setSelectedDriverId(null)}
-                  className="w-full"
+                  className="w-full mt-4"
                 >
                   Close Profile
                 </Button>
