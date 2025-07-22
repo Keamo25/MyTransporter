@@ -300,6 +300,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get driver profile information
+  app.get('/api/drivers/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = req.user;
+      const driverId = parseInt(req.params.id);
+
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      // Only admins and clients can view driver profiles
+      if (user.role !== 'admin' && user.role !== 'client') {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      const driver = await storage.getUser(driverId);
+      
+      if (!driver || driver.role !== 'driver') {
+        return res.status(404).json({ message: "Driver not found" });
+      }
+
+      // Return basic driver information (no sensitive data like password)
+      res.json({
+        id: driver.id,
+        firstName: driver.firstName,
+        lastName: driver.lastName,
+        email: driver.email,
+        role: driver.role,
+        createdAt: driver.createdAt,
+      });
+    } catch (error) {
+      console.error("Error fetching driver profile:", error);
+      res.status(500).json({ message: "Failed to fetch driver profile" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

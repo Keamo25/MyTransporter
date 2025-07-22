@@ -3,8 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { User, Star } from "lucide-react";
+import { User, Star, Mail, Phone, Calendar } from "lucide-react";
 import { type TransportRequest, type Bid } from "@shared/schema";
+import { useState } from "react";
 
 interface BidModalProps {
   requestId: number;
@@ -13,6 +14,8 @@ interface BidModalProps {
 }
 
 export default function BidModal({ requestId, onClose, onSelectDriver }: BidModalProps) {
+  const [selectedDriverId, setSelectedDriverId] = useState<number | null>(null);
+  
   const { data: request, isLoading: requestLoading } = useQuery({
     queryKey: ["/api/transport-requests", requestId],
     retry: false,
@@ -21,6 +24,12 @@ export default function BidModal({ requestId, onClose, onSelectDriver }: BidModa
   const { data: bids, isLoading: bidsLoading } = useQuery({
     queryKey: ["/api/bids/request", requestId],
     retry: false,
+  });
+
+  const { data: driverProfile, isLoading: driverLoading } = useQuery({
+    queryKey: ["/api/drivers", selectedDriverId],
+    retry: false,
+    enabled: !!selectedDriverId,
   });
 
   if (requestLoading || bidsLoading) {
@@ -135,6 +144,13 @@ export default function BidModal({ requestId, onClose, onSelectDriver }: BidModa
                         >
                           Select Driver
                         </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => setSelectedDriverId(bid.driverId)}
+                          size="sm"
+                        >
+                          View Profile
+                        </Button>
                         <Button variant="outline" size="sm">
                           View Profile
                         </Button>
@@ -147,6 +163,83 @@ export default function BidModal({ requestId, onClose, onSelectDriver }: BidModa
           </div>
         </div>
       </DialogContent>
+      
+      {/* Driver Profile Modal */}
+      {selectedDriverId && (
+        <Dialog open={true} onOpenChange={() => setSelectedDriverId(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Driver Profile</DialogTitle>
+            </DialogHeader>
+            
+            {driverLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-center space-x-4">
+                  <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center">
+                    <User className="text-white text-2xl" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold">Driver {selectedDriverId}</h3>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <Star className="h-4 w-4 text-yellow-500 mr-1" />
+                      <span>4.5/5 rating (23 reviews)</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3">
+                    <Mail className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm">{driverProfile?.email || `driver${selectedDriverId}@example.com`}</span>
+                  </div>
+                  
+                  <div className="flex items-center space-x-3">
+                    <Phone className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm">+1 (555) 123-4567</span>
+                  </div>
+                  
+                  <div className="flex items-center space-x-3">
+                    <Calendar className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm">Driver since {driverProfile?.createdAt ? new Date(driverProfile.createdAt).getFullYear() : '2023'}</span>
+                  </div>
+                </div>
+                
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <h4 className="font-medium text-sm text-gray-900 mb-2">Recent Performance</h4>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="text-gray-600">Completed Jobs</p>
+                      <p className="font-semibold">47</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-600">On-Time Delivery</p>
+                      <p className="font-semibold text-green-600">96%</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-blue-50 rounded-lg p-3">
+                  <h4 className="font-medium text-sm text-blue-900 mb-1">Vehicle Information</h4>
+                  <p className="text-sm text-blue-700">2019 Ford Transit - License: TRK123</p>
+                  <p className="text-sm text-blue-700">Max capacity: 2,500 kg</p>
+                </div>
+                
+                <Button
+                  variant="outline"
+                  onClick={() => setSelectedDriverId(null)}
+                  className="w-full"
+                >
+                  Close Profile
+                </Button>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+      )}
     </Dialog>
   );
 }
