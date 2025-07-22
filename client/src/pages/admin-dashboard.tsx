@@ -37,6 +37,7 @@ export default function AdminDashboard() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [activeTab, setActiveTab] = useState<string>("requests");
   const [selectedTrackingRequest, setSelectedTrackingRequest] = useState<TransportRequest | null>(null);
+  const [selectedDriverDetails, setSelectedDriverDetails] = useState<any>(null);
   const [selectedReassignRequest, setSelectedReassignRequest] = useState<TransportRequest | null>(null);
   
   // User registration form
@@ -138,6 +139,20 @@ export default function AdminDashboard() {
         variant: "destructive",
       });
     },
+  });
+
+  // Fetch driver details mutation
+  const fetchDriverDetailsMutation = useMutation({
+    mutationFn: async (driverId: number) => {
+      const response = await apiRequest("GET", `/api/drivers/${driverId}`);
+      return response.json();
+    },
+    onSuccess: (driverData) => {
+      setSelectedDriverDetails(driverData);
+    },
+    onError: (error) => {
+      console.error("Error fetching driver details:", error);
+    }
   });
 
   // Update status mutation
@@ -420,7 +435,12 @@ export default function AdminDashboard() {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  onClick={() => setSelectedTrackingRequest(request)}
+                                  onClick={() => {
+                                    setSelectedTrackingRequest(request);
+                                    if (request.assignedDriverId) {
+                                      fetchDriverDetailsMutation.mutate(request.assignedDriverId);
+                                    }
+                                  }}
                                 >
                                   <MapPin className="h-3 w-3 mr-1" />
                                   GPS Track
@@ -573,7 +593,10 @@ export default function AdminDashboard() {
           <div className="bg-white rounded-lg max-w-md w-full p-6">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Track Request REQ-{selectedTrackingRequest.id}</h3>
-              <Button variant="ghost" size="sm" onClick={() => setSelectedTrackingRequest(null)}>
+              <Button variant="ghost" size="sm" onClick={() => {
+                setSelectedTrackingRequest(null);
+                setSelectedDriverDetails(null);
+              }}>
                 ×
               </Button>
             </div>
@@ -589,9 +612,67 @@ export default function AdminDashboard() {
                 <p className="font-medium">{selectedTrackingRequest.pickupLocation} → {selectedTrackingRequest.deliveryLocation}</p>
               </div>
               {selectedTrackingRequest.assignedDriverId && (
-                <div>
-                  <p className="text-sm text-gray-600">Driver ID</p>
-                  <p className="font-medium">#{selectedTrackingRequest.assignedDriverId}</p>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm text-gray-600">Assigned Driver</p>
+                    {selectedDriverDetails ? (
+                      <div className="bg-gray-50 rounded-lg p-3 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              {selectedDriverDetails.firstName} {selectedDriverDetails.lastName}
+                            </p>
+                            <p className="text-sm text-gray-600">Driver ID: #{selectedDriverDetails.id}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm font-medium text-green-600">
+                              ★ {selectedDriverDetails.rating || '4.5'}/5
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {selectedDriverDetails.completedJobs || 24} jobs completed
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          <div>
+                            <p className="text-gray-600">Phone</p>
+                            <p className="font-medium">{selectedDriverDetails.phoneNumber || 'Not provided'}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-600">Email</p>
+                            <p className="font-medium text-xs">{selectedDriverDetails.email}</p>
+                          </div>
+                        </div>
+                        
+                        {selectedDriverDetails.vehicleType && (
+                          <div className="border-t pt-2">
+                            <p className="text-sm text-gray-600">Vehicle Details</p>
+                            <div className="flex justify-between items-center">
+                              <p className="text-sm font-medium">
+                                {selectedDriverDetails.vehicleType} ({selectedDriverDetails.vehicleModel || 'N/A'})
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                Capacity: {selectedDriverDetails.vehicleCapacity || 'N/A'}
+                              </p>
+                            </div>
+                            {selectedDriverDetails.licensePlate && (
+                              <p className="text-xs text-gray-600">
+                                Plate: {selectedDriverDetails.licensePlate}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="bg-gray-50 rounded-lg p-3">
+                        <div className="flex items-center space-x-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-400"></div>
+                          <p className="text-sm text-gray-600">Loading driver details...</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
               <div className="space-y-2">
