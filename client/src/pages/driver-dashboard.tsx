@@ -253,8 +253,9 @@ export default function DriverDashboard() {
                                     <Badge className="bg-yellow-100 text-yellow-800">Open</Badge>
                                   )}
                                 </div>
+                              </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                               <div>
                                 <p className="text-sm text-gray-600">
                                   Pickup Location
@@ -374,7 +375,7 @@ export default function DriverDashboard() {
                           </div>
                         );
                       })
-                      ) : (
+                    ) : (
                         <p className="text-gray-500 text-center py-8">
                           Loading requests...
                         </p>
