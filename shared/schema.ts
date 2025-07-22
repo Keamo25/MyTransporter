@@ -62,7 +62,7 @@ export const bids = pgTable("bids", {
   driverId: integer("driver_id").notNull(),
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   message: text("message"),
-  estimatedDelivery: timestamp("estimated_delivery").notNull(),
+  estimatedDelivery: timestamp("estimated_delivery"),
   status: varchar("status").notNull().default("pending"), // pending, accepted, rejected
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -145,7 +145,6 @@ export const insertBidSchema = createInsertSchema(bids).pick({
   requestId: true,
   amount: true,
   message: true,
-  estimatedDelivery: true,
 });
 
 // Schema for frontend bid form validation (expects strings from form inputs)
@@ -153,7 +152,6 @@ export const clientBidSchema = z.object({
   requestId: z.number(),
   amount: z.string().min(1, "Amount is required"),
   message: z.string().optional(),
-  estimatedDelivery: z.string().min(1, "Estimated delivery is required"),
 });
 
 // Types

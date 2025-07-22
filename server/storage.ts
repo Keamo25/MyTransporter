@@ -212,7 +212,7 @@ export class DatabaseStorage implements IStorage {
     return updatedRequest;
   }
 
-  async updateTransportRequestStatus(requestId: number, status: string): Promise<TransportRequest> {
+  async updateTransportRequestStatusOnly(requestId: number, status: string): Promise<TransportRequest> {
     const [updatedRequest] = await db
       .update(transportRequests)
       .set({

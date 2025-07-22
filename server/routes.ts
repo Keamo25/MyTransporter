@@ -159,13 +159,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Convert client data to database format
-      const { requestId, amount, message, estimatedDelivery } = req.body;
+      const { requestId, amount, message } = req.body;
       
       const bidToCreate = {
         requestId,
         amount: amount.toString(), // Convert number to string for decimal
-        message,
-        estimatedDelivery: new Date(estimatedDelivery), // Convert string to Date
+        message: message || null,
+        // estimatedDelivery is now optional, omit it to allow NULL
         driverId: user.id,
       };
       
@@ -420,7 +420,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         if (data.type === 'subscribe_tracking') {
           // Subscribe client to tracking updates for specific request
-          ws.requestId = data.requestId;
+          (ws as any).requestId = data.requestId;
         }
       } catch (error) {
         console.error('Error processing WebSocket message:', error);
