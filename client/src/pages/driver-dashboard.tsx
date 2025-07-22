@@ -8,7 +8,19 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Truck, Bell, User, LogOut, Mail, Phone, Calendar, Star, CheckCircle, Clock, Navigation } from "lucide-react";
+import {
+  Truck,
+  Bell,
+  User,
+  LogOut,
+  Mail,
+  Phone,
+  Calendar,
+  Star,
+  CheckCircle,
+  Clock,
+  Navigation,
+} from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { type TransportRequest, type Bid } from "@shared/schema";
 import { isUnauthorizedError } from "@/lib/authUtils";
@@ -16,10 +28,14 @@ import { GpsTracker } from "@/components/gps-tracker";
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case "pending": return "bg-yellow-100 text-yellow-800";
-    case "accepted": return "bg-green-100 text-green-800";
-    case "rejected": return "bg-red-100 text-red-800";
-    default: return "bg-gray-100 text-gray-800";
+    case "pending":
+      return "bg-yellow-100 text-yellow-800";
+    case "accepted":
+      return "bg-green-100 text-green-800";
+    case "rejected":
+      return "bg-red-100 text-red-800";
+    default:
+      return "bg-gray-100 text-gray-800";
   }
 };
 
@@ -94,7 +110,7 @@ export default function DriverDashboard() {
   const handleSubmitBid = (requestId: number) => {
     const amount = bidAmounts[requestId];
     const message = bidMessages[requestId];
-    
+
     if (!amount || parseFloat(amount) <= 0) {
       toast({
         title: "Error",
@@ -137,10 +153,14 @@ export default function DriverDashboard() {
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <Truck className="text-primary text-xl" />
-                <span className="ml-2 text-xl font-bold text-gray-900">MyTransporter</span>
+                <span className="ml-2 text-xl font-bold text-gray-900">
+                  MyTransporter
+                </span>
               </div>
               <div className="ml-8">
-                <Badge className="bg-green-100 text-green-800">Driver Portal</Badge>
+                <Badge className="bg-green-100 text-green-800">
+                  Driver Portal
+                </Badge>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -151,13 +171,19 @@ export default function DriverDashboard() {
                 <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
                   <User className="text-white text-sm" />
                 </div>
-                <span className="text-sm font-medium">{(user as any)?.firstName} {(user as any)?.lastName}</span>
+                <span className="text-sm font-medium">
+                  {(user as any)?.firstName} {(user as any)?.lastName}
+                </span>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => {
-                fetch('/api/auth/logout', { method: 'POST' }).then(() => {
-                  window.location.href = '/';
-                });
-              }}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  fetch("/api/auth/logout", { method: "POST" }).then(() => {
+                    window.location.href = "/";
+                  });
+                }}
+              >
                 <LogOut className="h-4 w-4" />
               </Button>
             </div>
@@ -167,7 +193,11 @@ export default function DriverDashboard() {
 
       {/* Dashboard Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="tracking">GPS Tracking</TabsTrigger>
@@ -180,124 +210,226 @@ export default function DriverDashboard() {
               <div className="lg:col-span-2">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-2xl font-bold text-gray-900">Available Requests</CardTitle>
+                    <CardTitle className="text-2xl font-bold text-gray-900">
+                      Available Requests
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                <div className="space-y-4">
-                  {Array.isArray(requests) && requests.length === 0 ? (
-                    <p className="text-gray-500 text-center py-8">No available requests</p>
-                  ) : Array.isArray(requests) ? (
-                    requests.map((request: TransportRequest) => (
-                      <div key={request.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow duration-200">
-                        <div className="flex justify-between items-start mb-4">
-                          <div>
-                            <h3 className="text-lg font-semibold text-gray-900">REQ-{request.id}</h3>
-                            <p className="text-sm text-gray-600">
-                              Pickup: {new Date(request.pickupDate).toLocaleDateString()} at {new Date(request.pickupDate).toLocaleTimeString()}
+                    <div className="space-y-4">
+                      {Array.isArray(requests) && requests.length === 0 ? (
+                        <p className="text-gray-500 text-center py-8">
+                          No available requests
+                        </p>
+                      ) : Array.isArray(requests) ? (
+                        requests.map((request: TransportRequest) => {
+                          // Check if driver has already placed a bid on this request
+                          const hasPlacedBid = Array.isArray(myBids) && myBids.some((bid: Bid) => bid.requestId === request.id);
+                          
+                          return (
+                            <div
+                              key={request.id}
+                              className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow duration-200"
+                            >
+                              <div className="flex justify-between items-start mb-4">
+                                <div>
+                                  <h3 className="text-lg font-semibold text-gray-900">
+                                    REQ-{request.id}
+                                  </h3>
+                                  <p className="text-sm text-gray-600">
+                                    Pickup:{" "}
+                                    {new Date(
+                                      request.pickupDate,
+                                    ).toLocaleDateString()}{" "}
+                                    at{" "}
+                                    {new Date(
+                                      request.pickupDate,
+                                    ).toLocaleTimeString()}
+                                  </p>
+                                </div>
+                                <div className="flex space-x-2">
+                                  {hasPlacedBid ? (
+                                    <Badge className="bg-green-100 text-green-800">Already placed a bid</Badge>
+                                  ) : (
+                                    <Badge className="bg-yellow-100 text-yellow-800">Open</Badge>
+                                  )}
+                                </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                              <div>
+                                <p className="text-sm text-gray-600">
+                                  Pickup Location
+                                </p>
+                                <p className="font-medium">
+                                  {request.pickupLocation}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-gray-600">
+                                  Delivery Location
+                                </p>
+                                <p className="font-medium">
+                                  {request.deliveryLocation}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                              <div>
+                                <p className="text-sm text-gray-600">Weight</p>
+                                <p className="font-medium">
+                                  {request.weight} kg
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-gray-600">
+                                  Dimensions
+                                </p>
+                                <p className="font-medium">
+                                  {request.dimensions}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="mb-4">
+                              <p className="text-sm text-gray-600">
+                                Description
+                              </p>
+                              <p className="text-gray-900">
+                                {request.itemDescription}
+                              </p>
+                            </div>
+
+                            {!hasPlacedBid && (
+                              <div className="border-t border-gray-200 pt-4">
+                                <h4 className="font-medium text-gray-900 mb-3">Submit Your Bid</h4>
+                                <div className="mb-3">
+                                  <Textarea
+                                    placeholder="Optional message for the client..."
+                                    value={bidMessages[request.id] || ""}
+                                    onChange={(e) =>
+                                      setBidMessages({
+                                        ...bidMessages,
+                                        [request.id]: e.target.value,
+                                      })
+                                    }
+                                    rows={2}
+                                  />
+                                </div>
+
+                                <div className="flex justify-between items-center">
+                                  <div className="flex items-center space-x-2">
+                                    <Input
+                                      type="number"
+                                      step="0.01"
+                                      placeholder="Your bid amount"
+                                      value={bidAmounts[request.id] || ""}
+                                      onChange={(e) =>
+                                        setBidAmounts({
+                                          ...bidAmounts,
+                                          [request.id]: e.target.value,
+                                        })
+                                      }
+                                      className="w-32"
+                                    />
+                                    <span className="text-sm text-gray-600 font-medium">R</span>
+                                  </div>
+                                  <Button
+                                    onClick={() => {
+                                      const amount = bidAmounts[request.id];
+                                      const message = bidMessages[request.id];
+                                      if (!amount) {
+                                        toast({
+                                          title: "Error",
+                                          description: "Please enter a bid amount",
+                                          variant: "destructive",
+                                        });
+                                        return;
+                                      }
+                                      createBidMutation.mutate({
+                                        requestId: request.id,
+                                        amount: parseFloat(amount),
+                                        message: message || "",
+                                      });
+                                    }}
+                                    disabled={createBidMutation.isPending}
+                                    className="bg-green-600 hover:bg-green-700"
+                                  >
+                                    {createBidMutation.isPending
+                                      ? "Submitting..."
+                                      : "Submit Bid"}
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                            
+                            {hasPlacedBid && (
+                              <div className="border-t border-gray-200 pt-4">
+                                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                                  <p className="text-sm text-green-800 font-medium">
+                                    You have already placed a bid on this request. Check "My Bids" section to see the status.
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })
+                      ) : (
+                        <p className="text-gray-500 text-center py-8">
+                          Loading requests...
+                        </p>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* My Bids */}
+              <div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg font-semibold text-gray-900">
+                      My Bids
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {Array.isArray(myBids) && myBids.length === 0 ? (
+                        <p className="text-gray-500 text-center py-8">
+                          No bids yet
+                        </p>
+                      ) : Array.isArray(myBids) ? (
+                        myBids.map((bid: Bid) => (
+                          <div
+                            key={bid.id}
+                            className="border border-gray-200 rounded-lg p-4"
+                          >
+                            <div className="flex justify-between items-start mb-2">
+                              <span className="text-sm font-medium text-gray-900">
+                                REQ-{bid.requestId}
+                              </span>
+                              <Badge className={getStatusColor(bid.status)}>
+                                {bid.status}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-gray-600 mb-2">
+                              My bid:{" "}
+                              <span className="font-medium">R{bid.amount}</span>
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              Submitted{" "}
+                              {new Date(bid.createdAt!).toLocaleDateString()}
                             </p>
                           </div>
-                          <Badge className="bg-yellow-100 text-yellow-800">Open</Badge>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                          <div>
-                            <p className="text-sm text-gray-600">Pickup Location</p>
-                            <p className="font-medium">{request.pickupLocation}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm text-gray-600">Delivery Location</p>
-                            <p className="font-medium">{request.deliveryLocation}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                          <div>
-                            <p className="text-sm text-gray-600">Weight</p>
-                            <p className="font-medium">{request.weight} kg</p>
-                          </div>
-                          <div>
-                            <p className="text-sm text-gray-600">Dimensions</p>
-                            <p className="font-medium">{request.dimensions}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="mb-4">
-                          <p className="text-sm text-gray-600">Description</p>
-                          <p className="text-gray-900">{request.itemDescription}</p>
-                        </div>
-                        
-                        <div className="mb-4">
-                          <Textarea
-                            placeholder="Optional message for the client..."
-                            value={bidMessages[request.id] || ""}
-                            onChange={(e) => setBidMessages({ ...bidMessages, [request.id]: e.target.value })}
-                            className="mb-2"
-                          />
-                        </div>
-                        
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-center space-x-2">
-                            <Input
-                              type="number"
-                              step="0.01"
-                              placeholder="Your bid"
-                              value={bidAmounts[request.id] || ""}
-                              onChange={(e) => setBidAmounts({ ...bidAmounts, [request.id]: e.target.value })}
-                              className="w-24"
-                            />
-                            <span className="text-sm text-gray-600">$</span>
-                          </div>
-                          <Button
-                            onClick={() => handleSubmitBid(request.id)}
-                            disabled={createBidMutation.isPending}
-                            className="bg-green-600 hover:bg-green-700"
-                          >
-                            {createBidMutation.isPending ? "Submitting..." : "Submit Bid"}
-                          </Button>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-gray-500 text-center py-8">Loading requests...</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          
-          {/* My Bids */}
-          <div>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold text-gray-900">My Bids</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {Array.isArray(myBids) && myBids.length === 0 ? (
-                    <p className="text-gray-500 text-center py-8">No bids yet</p>
-                  ) : Array.isArray(myBids) ? (
-                    myBids.map((bid: Bid) => (
-                      <div key={bid.id} className="border border-gray-200 rounded-lg p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <span className="text-sm font-medium text-gray-900">REQ-{bid.requestId}</span>
-                          <Badge className={getStatusColor(bid.status)}>
-                            {bid.status}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-2">
-                          My bid: <span className="font-medium">R{bid.amount}</span>
+                        ))
+                      ) : (
+                        <p className="text-gray-500 text-center py-8">
+                          Loading bids...
                         </p>
-                        <p className="text-xs text-gray-500">
-                          Submitted {new Date(bid.createdAt!).toLocaleDateString()}
-                        </p>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-gray-500 text-center py-8">Loading bids...</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </TabsContent>
@@ -313,14 +445,17 @@ export default function DriverDashboard() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 mb-6">
-                    Start GPS tracking for your active deliveries. This allows clients and admins to monitor delivery progress in real-time.
+                    Start GPS tracking for your active deliveries. This allows
+                    clients and admins to monitor delivery progress in
+                    real-time.
                   </p>
-                  
+
                   {/* Show GPS tracker for assigned requests */}
-                  {Array.isArray(myBids) && myBids.some((bid: Bid) => bid.status === 'accepted') ? (
+                  {Array.isArray(myBids) &&
+                  myBids.some((bid: Bid) => bid.status === "accepted") ? (
                     <div className="space-y-4">
                       {myBids
-                        .filter((bid: Bid) => bid.status === 'accepted')
+                        .filter((bid: Bid) => bid.status === "accepted")
                         .map((bid: Bid) => (
                           <GpsTracker
                             key={bid.requestId}
@@ -333,9 +468,12 @@ export default function DriverDashboard() {
                   ) : (
                     <div className="text-center py-12">
                       <Navigation className="mx-auto h-16 w-16 text-gray-300 mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">No Active Deliveries</h3>
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">
+                        No Active Deliveries
+                      </h3>
                       <p className="text-gray-600">
-                        GPS tracking will be available once you have an accepted bid for a delivery request.
+                        GPS tracking will be available once you have an accepted
+                        bid for a delivery request.
                       </p>
                     </div>
                   )}
@@ -348,7 +486,9 @@ export default function DriverDashboard() {
             <div className="max-w-4xl mx-auto">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-2xl font-bold text-gray-900">My Profile</CardTitle>
+                  <CardTitle className="text-2xl font-bold text-gray-900">
+                    My Profile
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Profile Header */}
@@ -363,114 +503,174 @@ export default function DriverDashboard() {
                       <p className="text-gray-600">Professional Driver</p>
                       <div className="flex items-center mt-2">
                         <Star className="h-4 w-4 text-yellow-500 mr-1" />
-                        <span className="text-sm text-gray-600">4.5/5 rating • Driver since {(user as any)?.createdAt ? new Date((user as any).createdAt).getFullYear() : '2023'}</span>
+                        <span className="text-sm text-gray-600">
+                          4.5/5 rating • Driver since{" "}
+                          {(user as any)?.createdAt
+                            ? new Date((user as any).createdAt).getFullYear()
+                            : "2023"}
+                        </span>
                       </div>
                     </div>
                   </div>
 
                   {/* Contact Information */}
                   <div className="bg-gray-50 rounded-lg p-6">
-                    <h4 className="font-semibold text-gray-900 mb-4">Contact Information</h4>
+                    <h4 className="font-semibold text-gray-900 mb-4">
+                      Contact Information
+                    </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">Email</label>
+                        <label className="text-sm font-medium text-gray-700">
+                          Email
+                        </label>
                         <div className="flex items-center space-x-3">
                           <Mail className="h-5 w-5 text-gray-400" />
-                          <Input value={(user as any)?.email || ''} disabled className="bg-gray-100" />
+                          <Input
+                            value={(user as any)?.email || ""}
+                            disabled
+                            className="bg-gray-100"
+                          />
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">Phone Number</label>
+                        <label className="text-sm font-medium text-gray-700">
+                          Phone Number
+                        </label>
                         <div className="flex items-center space-x-3">
                           <Phone className="h-5 w-5 text-gray-400" />
                           <Input placeholder="+27 (xxx) xxx-xxxx" />
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">First Name</label>
-                        <Input defaultValue={(user as any)?.firstName || ''} />
+                        <label className="text-sm font-medium text-gray-700">
+                          First Name
+                        </label>
+                        <Input defaultValue={(user as any)?.firstName || ""} />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">Last Name</label>
-                        <Input defaultValue={(user as any)?.lastName || ''} />
+                        <label className="text-sm font-medium text-gray-700">
+                          Last Name
+                        </label>
+                        <Input defaultValue={(user as any)?.lastName || ""} />
                       </div>
                     </div>
                   </div>
 
                   {/* Vehicle Information - Editable */}
                   <div className="bg-blue-50 rounded-lg p-6">
-                    <h4 className="font-semibold text-blue-900 mb-4">Vehicle Information</h4>
+                    <h4 className="font-semibold text-blue-900 mb-4">
+                      Vehicle Information
+                    </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-blue-700">Vehicle Type</label>
+                        <label className="text-sm font-medium text-blue-700">
+                          Vehicle Type
+                        </label>
                         <Input defaultValue="2019 Ford Transit" />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-blue-700">License Plate</label>
+                        <label className="text-sm font-medium text-blue-700">
+                          License Plate
+                        </label>
                         <Input defaultValue="TRK123" />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-blue-700">Max Capacity (kg)</label>
+                        <label className="text-sm font-medium text-blue-700">
+                          Max Capacity (kg)
+                        </label>
                         <Input type="number" defaultValue="2500" />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-blue-700">Vehicle Color</label>
+                        <label className="text-sm font-medium text-blue-700">
+                          Vehicle Color
+                        </label>
                         <Input defaultValue="White" />
                       </div>
                     </div>
                     <div className="mt-4 flex justify-end">
-                      <Button className="bg-blue-600 hover:bg-blue-700">Update Profile</Button>
+                      <Button className="bg-blue-600 hover:bg-blue-700">
+                        Update Profile
+                      </Button>
                     </div>
                   </div>
 
                   {/* Performance Metrics */}
                   <div className="bg-green-50 rounded-lg p-6">
-                    <h4 className="font-semibold text-green-900 mb-4">Performance Metrics</h4>
+                    <h4 className="font-semibold text-green-900 mb-4">
+                      Performance Metrics
+                    </h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div>
-                        <p className="text-sm text-green-700 mb-1">Total Bids</p>
-                        <p className="text-2xl font-bold text-green-900">{Array.isArray(myBids) ? myBids.length : 0}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-green-700 mb-1">Accepted Bids</p>
-                        <p className="text-2xl font-bold text-blue-600">
-                          {Array.isArray(myBids) ? myBids.filter(b => b.status === 'accepted').length : 0}
+                        <p className="text-sm text-green-700 mb-1">
+                          Total Bids
+                        </p>
+                        <p className="text-2xl font-bold text-green-900">
+                          {Array.isArray(myBids) ? myBids.length : 0}
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm text-green-700 mb-1">Success Rate</p>
+                        <p className="text-sm text-green-700 mb-1">
+                          Accepted Bids
+                        </p>
+                        <p className="text-2xl font-bold text-blue-600">
+                          {Array.isArray(myBids)
+                            ? myBids.filter((b) => b.status === "accepted")
+                                .length
+                            : 0}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-green-700 mb-1">
+                          Success Rate
+                        </p>
                         <p className="text-2xl font-bold text-yellow-600">
-                          {Array.isArray(myBids) && myBids.length > 0 
-                            ? Math.round((myBids.filter(b => b.status === 'accepted').length / myBids.length) * 100)
-                            : 0}%
+                          {Array.isArray(myBids) && myBids.length > 0
+                            ? Math.round(
+                                (myBids.filter((b) => b.status === "accepted")
+                                  .length /
+                                  myBids.length) *
+                                  100,
+                              )
+                            : 0}
+                          %
                         </p>
                       </div>
                     </div>
                   </div>
 
-
-
                   {/* Recent Bid History */}
                   <div className="bg-white border border-gray-200 rounded-lg p-6">
-                    <h4 className="font-semibold text-gray-900 mb-4">Recent Bid Activity</h4>
+                    <h4 className="font-semibold text-gray-900 mb-4">
+                      Recent Bid Activity
+                    </h4>
                     <div className="space-y-4">
                       {Array.isArray(myBids) && myBids.length === 0 ? (
                         <div className="text-center py-8">
                           <Clock className="h-12 w-12 text-gray-300 mx-auto mb-3" />
                           <p className="text-gray-500">No bids submitted yet</p>
-                          <p className="text-sm text-gray-400">Start bidding on available requests to build your profile</p>
+                          <p className="text-sm text-gray-400">
+                            Start bidding on available requests to build your
+                            profile
+                          </p>
                         </div>
                       ) : Array.isArray(myBids) ? (
                         myBids.slice(0, 3).map((bid: Bid) => (
-                          <div key={bid.id} className="border border-gray-200 rounded-lg p-4">
+                          <div
+                            key={bid.id}
+                            className="border border-gray-200 rounded-lg p-4"
+                          >
                             <div className="flex justify-between items-start mb-3">
                               <div className="flex items-center space-x-3">
                                 <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
                                   <Truck className="h-5 w-5 text-green-600" />
                                 </div>
                                 <div>
-                                  <p className="font-medium text-gray-900">REQ-{bid.requestId}</p>
-                                  <p className="text-sm text-gray-600">Bid Amount: R{bid.amount}</p>
+                                  <p className="font-medium text-gray-900">
+                                    REQ-{bid.requestId}
+                                  </p>
+                                  <p className="text-sm text-gray-600">
+                                    Bid Amount: R{bid.amount}
+                                  </p>
                                 </div>
                               </div>
                               <Badge className={getStatusColor(bid.status)}>
@@ -480,9 +680,14 @@ export default function DriverDashboard() {
                             <div className="flex items-center justify-between text-sm text-gray-500">
                               <div className="flex items-center space-x-2">
                                 <Calendar className="h-4 w-4" />
-                                <span>Submitted {new Date(bid.createdAt!).toLocaleDateString()}</span>
+                                <span>
+                                  Submitted{" "}
+                                  {new Date(
+                                    bid.createdAt!,
+                                  ).toLocaleDateString()}
+                                </span>
                               </div>
-                              {bid.status === 'accepted' && (
+                              {bid.status === "accepted" && (
                                 <div className="flex items-center space-x-1 text-green-600">
                                   <CheckCircle className="h-4 w-4" />
                                   <span className="font-medium">Selected</span>
@@ -492,13 +697,15 @@ export default function DriverDashboard() {
                           </div>
                         ))
                       ) : (
-                        <p className="text-gray-500 text-center py-8">Loading bid history...</p>
+                        <p className="text-gray-500 text-center py-8">
+                          Loading bid history...
+                        </p>
                       )}
                     </div>
                     {Array.isArray(myBids) && myBids.length > 3 && (
                       <div className="mt-4 text-center">
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           onClick={() => setActiveTab("dashboard")}
                           className="text-green-600 border-green-200 hover:bg-green-50"
                         >
