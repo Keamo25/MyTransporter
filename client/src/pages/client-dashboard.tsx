@@ -131,30 +131,30 @@ export default function ClientDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
+              <div className="flex-shrink-0 flex items-center">
                 <Truck className="text-primary text-xl" />
-                <span className="ml-2 text-xl font-bold text-gray-900">MyTransporter</span>
+                <span className="ml-2 text-lg sm:text-xl font-bold text-gray-900">MyTransporter</span>
               </div>
-              <div className="ml-8">
-                <Badge className="bg-blue-100 text-blue-800">Client Portal</Badge>
+              <div className="ml-4 sm:ml-8 hidden sm:block">
+                <Badge className="bg-blue-100 text-blue-800 text-xs sm:text-sm">Client Portal</Badge>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <Button variant="ghost" size="icon" className="hidden sm:flex">
                 <Bell className="h-4 w-4" />
               </Button>
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                  <User className="text-white text-sm" />
+              <div className="flex items-center space-x-1 sm:space-x-2">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-primary rounded-full flex items-center justify-center">
+                  <User className="text-white text-xs sm:text-sm" />
                 </div>
-                <span className="text-sm font-medium">{user?.firstName} {user?.lastName}</span>
+                <span className="text-xs sm:text-sm font-medium hidden sm:inline">{user?.firstName} {user?.lastName}</span>
               </div>
               <Button variant="ghost" size="icon" onClick={() => {
                 fetch('/api/auth/logout', { method: 'POST' }).then(() => {
                   window.location.href = '/';
                 });
               }}>
-                <LogOut className="h-4 w-4" />
+                <LogOut className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </div>
           </div>
@@ -162,15 +162,15 @@ export default function ClientDashboard() {
       </nav>
 
       {/* Dashboard Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="requests">Transport Requests</TabsTrigger>
-            <TabsTrigger value="profile">My Profile</TabsTrigger>
+            <TabsTrigger value="requests" className="text-xs sm:text-sm">Transport Requests</TabsTrigger>
+            <TabsTrigger value="profile" className="text-xs sm:text-sm">My Profile</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="requests" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <TabsContent value="requests" className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
               {/* Request Form */}
               <div className="lg:col-span-2">
                 <Card>

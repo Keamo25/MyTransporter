@@ -260,30 +260,30 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
+              <div className="flex-shrink-0 flex items-center">
                 <Truck className="text-primary text-xl" />
-                <span className="ml-2 text-xl font-bold text-gray-900">MyTransporter</span>
+                <span className="ml-2 text-lg sm:text-xl font-bold text-gray-900">MyTransporter</span>
               </div>
-              <div className="ml-8">
-                <Badge className="bg-purple-100 text-purple-800">Admin Portal</Badge>
+              <div className="ml-4 sm:ml-8 hidden sm:block">
+                <Badge className="bg-purple-100 text-purple-800 text-xs sm:text-sm">Admin Portal</Badge>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <Button variant="ghost" size="icon" className="hidden sm:flex">
                 <Bell className="h-4 w-4" />
               </Button>
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
-                  <User className="text-white text-sm" />
+              <div className="flex items-center space-x-1 sm:space-x-2">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-600 rounded-full flex items-center justify-center">
+                  <User className="text-white text-xs sm:text-sm" />
                 </div>
-                <span className="text-sm font-medium">{(user as any)?.firstName} {(user as any)?.lastName}</span>
+                <span className="text-xs sm:text-sm font-medium hidden sm:inline">{(user as any)?.firstName} {(user as any)?.lastName}</span>
               </div>
               <Button variant="ghost" size="icon" onClick={() => {
                 fetch('/api/auth/logout', { method: 'POST' }).then(() => {
                   window.location.href = '/';
                 });
               }}>
-                <LogOut className="h-4 w-4" />
+                <LogOut className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </div>
           </div>
@@ -291,77 +291,80 @@ export default function AdminDashboard() {
       </nav>
 
       {/* Dashboard Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
-            <TabsTrigger value="requests" className="flex items-center gap-2">
-              <ClipboardList className="h-4 w-4" />
-              Request Management
+          <TabsList className="grid w-full grid-cols-3 mb-4 sm:mb-8">
+            <TabsTrigger value="requests" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+              <ClipboardList className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Request Management</span>
+              <span className="sm:hidden">Requests</span>
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2">
-              <BarChart className="h-4 w-4" />
-              Analytics Dashboard
+            <TabsTrigger value="analytics" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+              <BarChart className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Analytics Dashboard</span>
+              <span className="sm:hidden">Analytics</span>
             </TabsTrigger>
-            <TabsTrigger value="users" className="flex items-center gap-2">
-              <UserPlus className="h-4 w-4" />
-              User Registration
+            <TabsTrigger value="users" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+              <UserPlus className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">User Registration</span>
+              <span className="sm:hidden">Users</span>
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="requests" className="space-y-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-8">
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Total Requests</p>
-                  <p className="text-2xl font-bold text-gray-900">{(stats as any)?.totalRequests || 0}</p>
+                  <p className="text-xs sm:text-sm text-gray-600">Total Requests</p>
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900">{(stats as any)?.totalRequests || 0}</p>
                 </div>
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <ClipboardList className="text-blue-600 text-xl" />
+                <div className="w-8 h-8 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <ClipboardList className="text-blue-600 text-sm sm:text-xl" />
                 </div>
               </div>
             </CardContent>
           </Card>
           
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Active Drivers</p>
-                  <p className="text-2xl font-bold text-gray-900">{(stats as any)?.activeDrivers || 0}</p>
+                  <p className="text-xs sm:text-sm text-gray-600">Active Drivers</p>
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900">{(stats as any)?.activeDrivers || 0}</p>
                 </div>
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                  <Users className="text-green-600 text-xl" />
+                <div className="w-8 h-8 sm:w-12 sm:h-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <Users className="text-green-600 text-sm sm:text-xl" />
                 </div>
               </div>
             </CardContent>
           </Card>
           
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Pending Approval</p>
-                  <p className="text-2xl font-bold text-gray-900">{(stats as any)?.pendingApproval || 0}</p>
+                  <p className="text-xs sm:text-sm text-gray-600">Pending Approval</p>
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900">{(stats as any)?.pendingApproval || 0}</p>
                 </div>
-                <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                  <Clock className="text-yellow-600 text-xl" />
+                <div className="w-8 h-8 sm:w-12 sm:h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                  <Clock className="text-yellow-600 text-sm sm:text-xl" />
                 </div>
               </div>
             </CardContent>
           </Card>
           
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Completed Today</p>
-                  <p className="text-2xl font-bold text-gray-900">{(stats as any)?.completedToday || 0}</p>
+                  <p className="text-xs sm:text-sm text-gray-600">Completed Today</p>
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900">{(stats as any)?.completedToday || 0}</p>
                 </div>
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                  <CheckCircle className="text-green-600 text-xl" />
+                <div className="w-8 h-8 sm:w-12 sm:h-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <CheckCircle className="text-green-600 text-sm sm:text-xl" />
                 </div>
               </div>
             </CardContent>
@@ -370,12 +373,12 @@ export default function AdminDashboard() {
         
         {/* Requests Management */}
         <Card>
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle className="text-2xl font-bold text-gray-900">Request Management</CardTitle>
-              <div className="flex space-x-2">
+          <CardHeader className="pb-3 sm:pb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
+              <CardTitle className="text-lg sm:text-2xl font-bold text-gray-900">Request Management</CardTitle>
+              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-40">
+                  <SelectTrigger className="w-full sm:w-40 text-xs sm:text-sm">
                     <SelectValue placeholder="Filter by status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -386,50 +389,43 @@ export default function AdminDashboard() {
                     <SelectItem value="completed">Completed</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button>
-                  <Download className="mr-2 h-4 w-4" />
+                <Button className="text-xs sm:text-sm">
+                  <Download className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                   Export
                 </Button>
               </div>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0 sm:p-6">
             <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Request ID</TableHead>
-                    <TableHead>Route</TableHead>
-                    <TableHead>Budget</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredRequests?.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={5} className="text-center py-8 text-gray-500">
-                        No requests found
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    filteredRequests?.map((request: TransportRequest) => (
-                      <TableRow key={request.id}>
-                        <TableCell className="font-medium">REQ-{request.id}</TableCell>
-                        <TableCell>{request.pickupLocation} → {request.deliveryLocation}</TableCell>
-                        <TableCell>R{request.budget}</TableCell>
-                        <TableCell>
+              {/* Mobile Card View */}
+              <div className="block sm:hidden space-y-3">
+                {filteredRequests?.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    No requests found
+                  </div>
+                ) : (
+                  filteredRequests?.map((request: TransportRequest) => (
+                    <Card key={request.id} className="p-4">
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="font-medium text-sm">REQ-{request.id}</p>
+                            <p className="text-xs text-gray-600">{request.pickupLocation} → {request.deliveryLocation}</p>
+                          </div>
                           <Badge className={getStatusColor(request.status)}>
                             {request.status}
                           </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex space-x-2">
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium">R{request.budget}</span>
+                          <div className="flex flex-col space-y-1">
                             {request.status === "pending" && (
                               <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={() => setSelectedRequestId(request.id)}
+                                className="text-xs"
                               >
                                 View Bids
                               </Button>
@@ -445,14 +441,16 @@ export default function AdminDashboard() {
                                       fetchDriverDetailsMutation.mutate(request.assignedDriverId);
                                     }
                                   }}
+                                  className="text-xs"
                                 >
                                   <MapPin className="h-3 w-3 mr-1" />
-                                  GPS Track
+                                  Track
                                 </Button>
                                 <Button
                                   variant="outline"
                                   size="sm"
                                   onClick={() => setSelectedReassignRequest(request)}
+                                  className="text-xs"
                                 >
                                   <RefreshCw className="h-3 w-3 mr-1" />
                                   Reassign
@@ -460,20 +458,98 @@ export default function AdminDashboard() {
                               </>
                             )}
                           </div>
+                        </div>
+                      </div>
+                    </Card>
+                  ))
+                )}
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden sm:block">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs sm:text-sm">Request ID</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Route</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden md:table-cell">Budget</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Status</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredRequests?.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                          No requests found
                         </TableCell>
                       </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
+                    ) : (
+                      filteredRequests?.map((request: TransportRequest) => (
+                        <TableRow key={request.id}>
+                          <TableCell className="font-medium text-xs sm:text-sm">REQ-{request.id}</TableCell>
+                          <TableCell className="text-xs sm:text-sm">{request.pickupLocation} → {request.deliveryLocation}</TableCell>
+                          <TableCell className="text-xs sm:text-sm hidden md:table-cell">R{request.budget}</TableCell>
+                          <TableCell>
+                            <Badge className={getStatusColor(request.status)}>
+                              {request.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-2">
+                              {request.status === "pending" && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setSelectedRequestId(request.id)}
+                                  className="text-xs"
+                                >
+                                  View Bids
+                                </Button>
+                              )}
+                              {(request.status === "assigned" || request.status === "in_progress") && (
+                                <>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      setSelectedTrackingRequest(request);
+                                      if (request.assignedDriverId) {
+                                        fetchDriverDetailsMutation.mutate(request.assignedDriverId);
+                                      }
+                                    }}
+                                    className="text-xs"
+                                  >
+                                    <MapPin className="h-3 w-3 mr-1" />
+                                    Track
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setSelectedReassignRequest(request)}
+                                    className="text-xs"
+                                  >
+                                    <RefreshCw className="h-3 w-3 mr-1" />
+                                    Reassign
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           </CardContent>
           </Card>
           </TabsContent>
 
           {/* Analytics Dashboard Tab */}
-          <TabsContent value="analytics" className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <TabsContent value="analytics" className="space-y-4 sm:space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
               
               {/* Revenue Overview */}
               <Card>
@@ -900,8 +976,8 @@ export default function AdminDashboard() {
 
       {/* Request Tracking Modal */}
       {selectedTrackingRequest && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-2 sm:p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Track Request REQ-{selectedTrackingRequest.id}</h3>
               <Button variant="ghost" size="sm" onClick={() => {

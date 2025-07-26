@@ -151,27 +151,27 @@ export default function DriverDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
+              <div className="flex-shrink-0 flex items-center">
                 <Truck className="text-primary text-xl" />
-                <span className="ml-2 text-xl font-bold text-gray-900">
+                <span className="ml-2 text-lg sm:text-xl font-bold text-gray-900">
                   MyTransporter
                 </span>
               </div>
-              <div className="ml-8">
-                <Badge className="bg-green-100 text-green-800">
+              <div className="ml-4 sm:ml-8 hidden sm:block">
+                <Badge className="bg-green-100 text-green-800 text-xs sm:text-sm">
                   Driver Portal
                 </Badge>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <Button variant="ghost" size="icon" className="hidden sm:flex">
                 <Bell className="h-4 w-4" />
               </Button>
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-                  <User className="text-white text-sm" />
+              <div className="flex items-center space-x-1 sm:space-x-2">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-600 rounded-full flex items-center justify-center">
+                  <User className="text-white text-xs sm:text-sm" />
                 </div>
-                <span className="text-sm font-medium">
+                <span className="text-xs sm:text-sm font-medium hidden sm:inline">
                   {(user as any)?.firstName} {(user as any)?.lastName}
                 </span>
               </div>
@@ -184,7 +184,7 @@ export default function DriverDashboard() {
                   });
                 }}
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </div>
           </div>
@@ -192,16 +192,16 @@ export default function DriverDashboard() {
       </nav>
 
       {/* Dashboard Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
-          className="space-y-6"
+          className="space-y-4 sm:space-y-6"
         >
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-            <TabsTrigger value="tracking">GPS Tracking</TabsTrigger>
-            <TabsTrigger value="profile">My Profile</TabsTrigger>
+            <TabsTrigger value="dashboard" className="text-xs sm:text-sm">Dashboard</TabsTrigger>
+            <TabsTrigger value="tracking" className="text-xs sm:text-sm">GPS Tracking</TabsTrigger>
+            <TabsTrigger value="profile" className="text-xs sm:text-sm">My Profile</TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard" className="space-y-6">
