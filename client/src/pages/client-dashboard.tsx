@@ -10,8 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Truck, Bell, User, LogOut, MapPin, Calendar, Package, Star, Mail, Phone } from "lucide-react";
+import { Truck, Bell, User, LogOut, MapPin, Calendar, Package, Star, Mail, Phone, Plus, X } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { clientTransportRequestSchema, type TransportRequest } from "@shared/schema";
 import { isUnauthorizedError } from "@/lib/authUtils";
@@ -32,6 +33,8 @@ export default function ClientDashboard() {
   const { user, isLoading } = useAuth();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("requests");
+  const [isMultipleStops, setIsMultipleStops] = useState(false);
+  const [stopLocations, setStopLocations] = useState<string[]>([]);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -67,6 +70,8 @@ export default function ClientDashboard() {
       weight: "",
       dimensions: "",
       budget: "",
+      isMultipleStops: false,
+      stopLocations: [],
     },
   });
 
@@ -81,6 +86,8 @@ export default function ClientDashboard() {
         description: "Transport request created successfully",
       });
       form.reset();
+      setIsMultipleStops(false);
+      setStopLocations([]);
       queryClient.invalidateQueries({ queryKey: ["/api/transport-requests"] });
     },
     onError: (error) => {
@@ -108,7 +115,23 @@ export default function ClientDashboard() {
       ...data,
       weight: parseFloat(data.weight),
       budget: parseFloat(data.budget),
+      stopLocations: isMultipleStops ? stopLocations : [],
+      isMultipleStops,
     });
+  };
+
+  const addStopLocation = () => {
+    setStopLocations([...stopLocations, ""]);
+  };
+
+  const removeStopLocation = (index: number) => {
+    setStopLocations(stopLocations.filter((_, i) => i !== index));
+  };
+
+  const updateStopLocation = (index: number, value: string) => {
+    const updated = [...stopLocations];
+    updated[index] = value;
+    setStopLocations(updated);
   };
 
   if (isLoading || requestsLoading) {
@@ -208,6 +231,67 @@ export default function ClientDashboard() {
                         )}
                       />
                     </div>
+                    
+                    {/* Multiple Stops Toggle */}
+                    <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
+                      <Switch
+                        checked={isMultipleStops}
+                        onCheckedChange={(checked) => {
+                          setIsMultipleStops(checked);
+                          if (!checked) {
+                            setStopLocations([]);
+                          }
+                        }}
+                      />
+                      <div>
+                        <label className="text-sm font-medium text-gray-900">Multiple Stops</label>
+                        <p className="text-xs text-gray-600">Add intermediate stops before final delivery</p>
+                      </div>
+                    </div>
+                    
+                    {/* Stop Locations */}
+                    {isMultipleStops && (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <label className="text-sm font-medium text-gray-900">Intermediate Stops</label>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={addStopLocation}
+                            className="flex items-center space-x-2"
+                          >
+                            <Plus className="h-4 w-4" />
+                            <span>Add Stop</span>
+                          </Button>
+                        </div>
+                        
+                        {stopLocations.map((location, index) => (
+                          <div key={index} className="flex items-center space-x-3">
+                            <div className="flex-1">
+                              <Input
+                                placeholder={`Stop ${index + 1} address`}
+                                value={location}
+                                onChange={(e) => updateStopLocation(index, e.target.value)}
+                              />
+                            </div>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => removeStopLocation(index)}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                        
+                        {stopLocations.length === 0 && (
+                          <p className="text-sm text-gray-500 italic">Click "Add Stop" to add intermediate locations</p>
+                        )}
+                      </div>
+                    )}
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-4">
@@ -355,7 +439,11 @@ export default function ClientDashboard() {
                           </Badge>
                         </div>
                         <p className="text-sm text-gray-600 mb-2">
-                          {request.pickupLocation} → {request.deliveryLocation}
+                          {request.pickupLocation} 
+                          {request.isMultipleStops && request.stopLocations && request.stopLocations.length > 0 && (
+                            <span className="text-blue-600"> → {request.stopLocations.length} stop{request.stopLocations.length > 1 ? 's' : ''}</span>
+                          )}
+                          → {request.deliveryLocation}
                         </p>
                         <p className="text-xs text-gray-500 mb-3">
                           Created {new Date(request.createdAt!).toLocaleDateString()}

@@ -22,7 +22,11 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   
   // Transport request operations
-  createTransportRequest(request: InsertTransportRequest & { clientId: number }): Promise<TransportRequest>;
+  createTransportRequest(request: InsertTransportRequest & { 
+    clientId: number; 
+    isMultipleStops?: boolean; 
+    stopLocations?: string[]; 
+  }): Promise<TransportRequest>;
   getTransportRequests(): Promise<TransportRequest[]>;
   getTransportRequestsForClient(clientId: number): Promise<TransportRequest[]>;
   getTransportRequestById(id: number): Promise<TransportRequest | undefined>;
@@ -70,10 +74,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Transport request operations
-  async createTransportRequest(request: InsertTransportRequest & { clientId: number }): Promise<TransportRequest> {
+  async createTransportRequest(request: InsertTransportRequest & { 
+    clientId: number; 
+    isMultipleStops?: boolean; 
+    stopLocations?: string[]; 
+  }): Promise<TransportRequest> {
     const [transportRequest] = await db
       .insert(transportRequests)
-      .values(request)
+      .values({
+        ...request,
+        isMultipleStops: request.isMultipleStops || false,
+        stopLocations: request.stopLocations || [],
+      })
       .returning();
     return transportRequest;
   }

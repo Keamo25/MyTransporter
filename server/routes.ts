@@ -31,6 +31,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         weight: z.number(),
         dimensions: z.string(),
         budget: z.number(),
+        isMultipleStops: z.boolean().optional(),
+        stopLocations: z.array(z.string()).optional(),
       });
       
       const clientData = serverRequestSchema.parse(req.body);
@@ -48,6 +50,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         weight: clientData.weight.toString(),
         dimensions: clientData.dimensions,
         budget: clientData.budget.toString(),
+        isMultipleStops: clientData.isMultipleStops || false,
+        stopLocations: (clientData.isMultipleStops && clientData.stopLocations) ? 
+          clientData.stopLocations.filter(location => location.trim() !== '') : [],
         clientId: user.id,
       });
       
