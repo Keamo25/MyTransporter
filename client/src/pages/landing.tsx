@@ -27,12 +27,21 @@ export default function Landing() {
                 </Button>
                 
                 <Button
-                  onClick={() => window.location.href = '/register'}
+                  onClick={() => window.location.href = '/register?type=driver'}
                   variant="outline"
-                  className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 font-medium py-2.5 sm:py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center text-sm sm:text-base"
+                  className="w-full border-green-600 text-green-600 hover:bg-green-50 font-medium py-2.5 sm:py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center text-sm sm:text-base"
                 >
                   <Truck className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                  Get Started
+                  Register as Driver
+                </Button>
+                
+                <Button
+                  onClick={() => window.location.href = '/register?type=client'}
+                  variant="outline"
+                  className="w-full border-purple-600 text-purple-600 hover:bg-purple-50 font-medium py-2.5 sm:py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center text-sm sm:text-base"
+                >
+                  <Users className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                  Register as Client
                 </Button>
               </div>
               

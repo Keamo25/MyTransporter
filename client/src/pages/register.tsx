@@ -18,6 +18,11 @@ export default function Register() {
   const { user, isLoading } = useAuth();
   const { toast } = useToast();
   const [, navigate] = useLocation();
+  
+  // Get URL parameters to pre-select role
+  const urlParams = new URLSearchParams(window.location.search);
+  const userType = urlParams.get('type');
+  const defaultRole = userType === 'driver' ? 'driver' : userType === 'client' ? 'client' : 'client';
 
   // Redirect if already logged in
   useEffect(() => {
@@ -33,7 +38,7 @@ export default function Register() {
       password: "",
       firstName: "",
       lastName: "",
-      role: "client",
+      role: defaultRole,
     },
   });
 
@@ -76,18 +81,20 @@ export default function Register() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary to-blue-700">
-      <div className="flex items-center justify-center min-h-screen py-8">
-        <div className="max-w-md w-full mx-4">
+      <div className="flex items-center justify-center min-h-screen py-4 px-4">
+        <div className="max-w-md w-full">
           <Card className="shadow-2xl">
-            <CardHeader className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-4 mx-auto">
-                <Truck className="text-white text-2xl" />
+            <CardHeader className="text-center pb-4 sm:pb-6">
+              <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-primary rounded-full mb-3 sm:mb-4 mx-auto">
+                <Truck className="text-white text-xl sm:text-2xl" />
               </div>
-              <CardTitle className="text-3xl font-bold text-gray-900">Create Account</CardTitle>
-              <p className="text-gray-600 mt-2">Join MyTransporter today</p>
-              <p className="text-sm text-gray-500 mt-1">We transport at your financial convenience</p>
+              <CardTitle className="text-2xl sm:text-3xl font-bold text-gray-900">
+                {defaultRole === 'driver' ? 'Register as Driver' : 'Register as Client'}
+              </CardTitle>
+              <p className="text-sm sm:text-base text-gray-600 mt-2">Join MyTransporter today</p>
+              <p className="text-xs sm:text-sm text-gray-500 mt-1">We transport at your financial convenience</p>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 sm:p-6">
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
@@ -167,7 +174,7 @@ export default function Register() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Account Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select your role" />
