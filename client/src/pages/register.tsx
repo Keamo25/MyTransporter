@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Truck } from "lucide-react";
+import { Truck, Users } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { registerUserSchema } from "@shared/schema";
 import { useLocation } from "wouter";
@@ -168,28 +168,59 @@ export default function Register() {
                     )}
                   />
                   
-                  <FormField
-                    control={form.control}
-                    name="role"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Account Type</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select your role" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="client">Client - I need transport services</SelectItem>
-                            <SelectItem value="driver">Driver - I provide transport services</SelectItem>
-                            <SelectItem value="admin">Admin - I manage the platform</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {/* Only show role selection if no specific type was requested */}
+                  {!userType && (
+                    <FormField
+                      control={form.control}
+                      name="role"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Account Type</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select your role" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="client">Client - I need transport services</SelectItem>
+                              <SelectItem value="driver">Driver - I provide transport services</SelectItem>
+                              <SelectItem value="admin">Admin - I manage the platform</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                  
+                  {/* Show selected role as read-only when coming from specific registration buttons */}
+                  {userType && (
+                    <div className="bg-gray-50 p-4 rounded-lg border">
+                      <div className="flex items-center space-x-3">
+                        {defaultRole === 'driver' ? (
+                          <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                            <Truck className="h-5 w-5 text-green-600" />
+                          </div>
+                        ) : (
+                          <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                            <Users className="h-5 w-5 text-purple-600" />
+                          </div>
+                        )}
+                        <div>
+                          <p className="font-medium text-gray-900">
+                            {defaultRole === 'driver' ? 'Driver Account' : 'Client Account'}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            {defaultRole === 'driver' 
+                              ? 'You will provide transport services' 
+                              : 'You will request transport services'
+                            }
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   
                   <Button
                     type="submit"

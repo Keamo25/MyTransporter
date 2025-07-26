@@ -12,6 +12,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**Enhanced Registration System (July 26, 2025)**
+- Replaced single "Get Started" button with separate "Register as Driver" and "Register as Client" buttons on landing page
+- Updated registration page to automatically detect URL parameters and pre-select user role
+- Removed account type selection when users arrive from specific registration buttons
+- Added visual confirmation of selected account type with role-specific icons and descriptions
+- Enhanced user experience by streamlining the registration flow for targeted user types
+
 **Mobile-Ready Application Implementation (July 26, 2025)**
 - Implemented comprehensive mobile responsiveness across all pages and components
 - Optimized navigation bars with responsive sizing and hidden elements on smaller screens  
