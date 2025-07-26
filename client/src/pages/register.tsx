@@ -13,6 +13,7 @@ import { Truck, Users } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { registerUserSchema } from "@shared/schema";
 import { useLocation } from "wouter";
+import { z } from "zod";
 
 export default function Register() {
   const { user, isLoading } = useAuth();
@@ -32,10 +33,16 @@ export default function Register() {
   }, [user, isLoading, navigate]);
 
   const form = useForm({
-    resolver: zodResolver(registerUserSchema),
+    resolver: zodResolver(registerUserSchema.extend({
+      confirmPassword: z.string().min(6, "Password must be at least 6 characters"),
+    }).refine((data) => data.password === data.confirmPassword, {
+      message: "Passwords don't match",
+      path: ["confirmPassword"],
+    })),
     defaultValues: {
       email: "",
       password: "",
+      confirmPassword: "",
       firstName: "",
       lastName: "",
       role: defaultRole,
@@ -65,7 +72,9 @@ export default function Register() {
   });
 
   const onSubmit = (data: any) => {
-    registerMutation.mutate(data);
+    // Remove confirmPassword from the data before sending to API
+    const { confirmPassword, ...registrationData } = data;
+    registerMutation.mutate(registrationData);
   };
 
   if (isLoading) {
@@ -160,6 +169,24 @@ export default function Register() {
                           <Input
                             type="password"
                             placeholder="Choose a strong password"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Confirm Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder="Confirm your password"
                             {...field}
                           />
                         </FormControl>
