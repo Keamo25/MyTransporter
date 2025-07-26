@@ -20,6 +20,7 @@ import {
   CheckCircle,
   Clock,
   Navigation,
+  MapPin,
 } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { type TransportRequest, type Bid } from "@shared/schema";
@@ -258,7 +259,7 @@ export default function DriverDashboard() {
                               {/* Route Information */}
                               <div className="mb-4">
                                 <p className="text-sm text-gray-600 mb-2">Route Details</p>
-                                {request.isMultipleStops && request.stopLocations && request.stopLocations.length > 0 ? (
+                                {request.isMultipleStops && Array.isArray(request.stopLocations) && request.stopLocations.length > 0 ? (
                                   <div className="bg-gray-50 rounded-lg p-3 space-y-2">
                                     <div className="flex items-center">
                                       <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
@@ -268,7 +269,7 @@ export default function DriverDashboard() {
                                       </div>
                                     </div>
                                     
-                                    {request.stopLocations.map((stop, index) => (
+                                    {request.stopLocations.map((stop: string, index: number) => (
                                       <div key={index} className="flex items-center">
                                         <div className="w-3 h-3 bg-orange-400 rounded-full mr-3"></div>
                                         <div>
@@ -289,7 +290,7 @@ export default function DriverDashboard() {
                                     <div className="mt-2 pt-2 border-t border-gray-200">
                                       <div className="flex items-center text-sm text-blue-600">
                                         <MapPin className="h-4 w-4 mr-1" />
-                                        <span>Multiple stops delivery ({request.stopLocations.length + 2} locations total)</span>
+                                        <span>Multiple stops delivery ({(request.stopLocations as string[]).length + 2} locations total)</span>
                                       </div>
                                     </div>
                                   </div>

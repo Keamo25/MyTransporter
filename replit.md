@@ -12,6 +12,16 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**Multiple Stops Feature Implementation (July 26, 2025)**
+- Added comprehensive multiple stops functionality to client request creation form
+- Implemented database schema changes with `stop_locations` JSONB column and `is_multiple_stops` boolean
+- Enhanced client dashboard with toggle switch and dynamic stop location form fields
+- Updated bid modal in admin dashboard to display all stops with color-coded route visualization
+- Enhanced driver dashboard to show complete route information with visual markers
+- Added proper TypeScript support and error handling for multiple stops data
+- Integrated multiple stops display across client, driver, and admin interfaces
+- Maintained backward compatibility with existing single-destination requests
+
 **Enhanced Registration System (July 26, 2025)**
 - Replaced single "Get Started" button with separate "Register as Driver" and "Register as Client" buttons on landing page
 - Updated registration page to automatically detect URL parameters and pre-select user role
