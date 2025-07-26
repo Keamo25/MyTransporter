@@ -413,9 +413,14 @@ export default function AdminDashboard() {
                             <p className="font-medium text-sm">REQ-{request.id}</p>
                             <p className="text-xs text-gray-600">{request.pickupLocation} → {request.deliveryLocation}</p>
                           </div>
-                          <Badge className={getStatusColor(request.status)}>
-                            {request.status}
-                          </Badge>
+                          <div className="flex flex-col items-end space-y-1">
+                            <Badge className={getStatusColor(request.status)}>
+                              {request.status}
+                            </Badge>
+                            <Badge variant="outline" className={request.isMultipleStops ? "bg-orange-50 text-orange-700 border-orange-200" : "bg-blue-50 text-blue-700 border-blue-200"}>
+                              {request.isMultipleStops ? "Multiple Stops" : "Single Stop"}
+                            </Badge>
+                          </div>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-sm font-medium">R{request.budget}</span>
@@ -473,6 +478,7 @@ export default function AdminDashboard() {
                       <TableHead className="text-xs sm:text-sm">Request ID</TableHead>
                       <TableHead className="text-xs sm:text-sm">Route</TableHead>
                       <TableHead className="text-xs sm:text-sm hidden md:table-cell">Budget</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Type</TableHead>
                       <TableHead className="text-xs sm:text-sm">Status</TableHead>
                       <TableHead className="text-xs sm:text-sm">Actions</TableHead>
                     </TableRow>
@@ -480,7 +486,7 @@ export default function AdminDashboard() {
                   <TableBody>
                     {filteredRequests?.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                        <TableCell colSpan={6} className="text-center py-8 text-gray-500">
                           No requests found
                         </TableCell>
                       </TableRow>
@@ -490,6 +496,11 @@ export default function AdminDashboard() {
                           <TableCell className="font-medium text-xs sm:text-sm">REQ-{request.id}</TableCell>
                           <TableCell className="text-xs sm:text-sm">{request.pickupLocation} → {request.deliveryLocation}</TableCell>
                           <TableCell className="text-xs sm:text-sm hidden md:table-cell">R{request.budget}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className={request.isMultipleStops ? "bg-orange-50 text-orange-700 border-orange-200" : "bg-blue-50 text-blue-700 border-blue-200"}>
+                              {request.isMultipleStops ? "Multiple Stops" : "Single Stop"}
+                            </Badge>
+                          </TableCell>
                           <TableCell>
                             <Badge className={getStatusColor(request.status)}>
                               {request.status}
