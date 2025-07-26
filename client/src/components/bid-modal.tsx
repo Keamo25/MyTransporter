@@ -72,12 +72,28 @@ export default function BidModal({
               <h4 className="font-semibold text-gray-900 mb-2">
                 Request Details
               </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{/* Dynamic grid adjustment for multiple stops */}
+                <div className={request?.isMultipleStops ? "md:col-span-2" : ""}>
                   <p className="text-sm text-gray-600">Route</p>
-                  <p className="font-medium">
-                    {request?.pickupLocation} → {request?.deliveryLocation}
-                  </p>
+                  {request?.isMultipleStops && request?.stopLocations && request.stopLocations.length > 0 ? (
+                    <div className="space-y-1">
+                      <p className="font-medium">
+                        <span className="text-blue-600">Start:</span> {request.pickupLocation}
+                      </p>
+                      {request.stopLocations.map((stop, index) => (
+                        <p key={index} className="font-medium text-orange-600 ml-4">
+                          Stop {index + 1}: {stop}
+                        </p>
+                      ))}
+                      <p className="font-medium">
+                        <span className="text-green-600">Final:</span> {request.deliveryLocation}
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="font-medium">
+                      {request?.pickupLocation} → {request?.deliveryLocation}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Client Budget</p>
