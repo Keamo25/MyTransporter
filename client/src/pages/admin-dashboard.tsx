@@ -360,8 +360,8 @@ export default function AdminDashboard() {
             <CardContent className="p-3 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs sm:text-sm text-gray-600">Completed Today</p>
-                  <p className="text-lg sm:text-2xl font-bold text-gray-900">{(stats as any)?.completedToday || 0}</p>
+                  <p className="text-xs sm:text-sm text-gray-600">Completed Trips</p>
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900">{Array.isArray(requests) ? requests.filter((r: TransportRequest) => r.status === "completed").length : 0}</p>
                 </div>
                 <div className="w-8 h-8 sm:w-12 sm:h-12 bg-green-100 rounded-full flex items-center justify-center">
                   <CheckCircle className="text-green-600 text-sm sm:text-xl" />
