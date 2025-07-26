@@ -255,24 +255,57 @@ export default function DriverDashboard() {
                                 </div>
                               </div>
 
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                              <div>
-                                <p className="text-sm text-gray-600">
-                                  Pickup Location
-                                </p>
-                                <p className="font-medium">
-                                  {request.pickupLocation}
-                                </p>
+                              {/* Route Information */}
+                              <div className="mb-4">
+                                <p className="text-sm text-gray-600 mb-2">Route Details</p>
+                                {request.isMultipleStops && request.stopLocations && request.stopLocations.length > 0 ? (
+                                  <div className="bg-gray-50 rounded-lg p-3 space-y-2">
+                                    <div className="flex items-center">
+                                      <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                                      <div>
+                                        <span className="text-xs text-gray-600 uppercase tracking-wide">Start</span>
+                                        <p className="font-medium text-gray-900">{request.pickupLocation}</p>
+                                      </div>
+                                    </div>
+                                    
+                                    {request.stopLocations.map((stop, index) => (
+                                      <div key={index} className="flex items-center">
+                                        <div className="w-3 h-3 bg-orange-400 rounded-full mr-3"></div>
+                                        <div>
+                                          <span className="text-xs text-gray-600 uppercase tracking-wide">Stop {index + 1}</span>
+                                          <p className="font-medium text-gray-900">{stop}</p>
+                                        </div>
+                                      </div>
+                                    ))}
+                                    
+                                    <div className="flex items-center">
+                                      <div className="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
+                                      <div>
+                                        <span className="text-xs text-gray-600 uppercase tracking-wide">Final Destination</span>
+                                        <p className="font-medium text-gray-900">{request.deliveryLocation}</p>
+                                      </div>
+                                    </div>
+                                    
+                                    <div className="mt-2 pt-2 border-t border-gray-200">
+                                      <div className="flex items-center text-sm text-blue-600">
+                                        <MapPin className="h-4 w-4 mr-1" />
+                                        <span>Multiple stops delivery ({request.stopLocations.length + 2} locations total)</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                      <p className="text-sm text-gray-600">Pickup Location</p>
+                                      <p className="font-medium">{request.pickupLocation}</p>
+                                    </div>
+                                    <div>
+                                      <p className="text-sm text-gray-600">Delivery Location</p>
+                                      <p className="font-medium">{request.deliveryLocation}</p>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
-                              <div>
-                                <p className="text-sm text-gray-600">
-                                  Delivery Location
-                                </p>
-                                <p className="font-medium">
-                                  {request.deliveryLocation}
-                                </p>
-                              </div>
-                            </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                               <div>
